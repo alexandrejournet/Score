@@ -1,0 +1,253 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
+import '../models/game.dart';
+import '../models/player.dart';
+import '../models/group.dart';
+import '../models/game_played.dart';
+import '../data/repositories/game_repository.dart';
+import '../data/repositories/player_repository.dart';
+import '../data/repositories/group_repository.dart';
+import '../data/repositories/game_played_repository.dart';
+
+import '../services/persistence_service.dart';
+
+const _uuid = Uuid();
+
+final themeModeProvider = StateProvider<ThemeMode>((ref) => PersistenceService.loadThemeMode());
+final gameDataVersionProvider = StateProvider<int>((ref) => 0);
+
+void bumpGameVersion(WidgetRef ref) {
+  ref.read(gameDataVersionProvider.notifier).state++;
+}
+
+final gameRepositoryProvider = Provider<GameRepository>(
+  (ref) => GameRepository(
+    customGames: PersistenceService.loadCustomGames(),
+    myGameIds: PersistenceService.loadMyGameIds(),
+  ),
+);
+final playerRepositoryProvider = Provider<PlayerRepository>(
+  (ref) => PlayerRepository(players: PersistenceService.loadPlayers()),
+);
+final groupRepositoryProvider = Provider<GroupRepository>(
+  (ref) => GroupRepository(groups: PersistenceService.loadGroups()),
+);
+final gamePlayedRepositoryProvider = Provider<GamePlayedRepository>(
+  (ref) => GamePlayedRepository(gamePlayed: PersistenceService.loadGamePlayed()),
+);
+
+final allGamesProvider = Provider<List<Game>>((ref) {
+  ref.watch(gameDataVersionProvider);
+  return ref.read(gameRepositoryProvider).all;
+});
+
+final myGamesProvider = Provider<List<Game>>((ref) {
+  ref.watch(gameDataVersionProvider);
+  return ref.read(gameRepositoryProvider).myGames;
+});
+
+final gameBankProvider = Provider<List<Game>>((ref) {
+  ref.watch(gameDataVersionProvider);
+  return ref.read(gameRepositoryProvider).bank;
+});
+
+final allPlayersProvider = Provider<List<Player>>((ref) {
+  ref.watch(gameDataVersionProvider);
+  return ref.read(playerRepositoryProvider).all;
+});
+
+final allGroupsProvider = Provider<List<Group>>((ref) {
+  ref.watch(gameDataVersionProvider);
+  return ref.read(groupRepositoryProvider).all;
+});
+
+final activeGamesProvider = Provider<List<GamePlayed>>((ref) {
+  ref.watch(gameDataVersionProvider);
+  return ref.read(gamePlayedRepositoryProvider).active;
+});
+
+final finishedGamesProvider = Provider<List<GamePlayed>>((ref) {
+  ref.watch(gameDataVersionProvider);
+  return ref.read(gamePlayedRepositoryProvider).finished;
+});
+
+final selectedTabProvider = StateProvider<String>((ref) => 'all');
+
+final gamesByTabProvider = Provider<List<GamePlayed>>((ref) {
+  final tab = ref.watch(selectedTabProvider);
+  ref.watch(gameDataVersionProvider);
+  final all = ref.read(gamePlayedRepositoryProvider).all;
+  if (tab == 'all') return all;
+  return all.where((g) => g.gameId == tab).toList();
+});
+
+void _saveData(WidgetRef ref) {
+  final repo = ref.read(gameRepositoryProvider);
+  PersistenceService.saveAll(
+    customGames: repo.custom,
+    players: ref.read(playerRepositoryProvider).all,
+    groups: ref.read(groupRepositoryProvider).all,
+    gamePlayed: ref.read(gamePlayedRepositoryProvider).all,
+    myGameIds: repo.myGames.map((g) => g.id).toSet(),
+  );
+}
+
+void addGame(WidgetRef ref, Game game) {
+  ref.read(gameRepositoryProvider).addCustom(game);
+  ref.invalidate(allGamesProvider);
+  bumpGameVersion(ref);
+  _saveData(ref);
+}
+
+void addPlayer(WidgetRef ref, Player player) {
+  ref.read(playerRepositoryProvider).add(player);
+  ref.invalidate(allPlayersProvider);
+  bumpGameVersion(ref);
+  _saveData(ref);
+}
+
+void addGroup(WidgetRef ref, Group group) {
+  ref.read(groupRepositoryProvider).add(group);
+  ref.invalidate(allGroupsProvider);
+  bumpGameVersion(ref);
+  _saveData(ref);
+}
+
+String startGame(WidgetRef ref, String gameId, List<String> playerIds) {
+  final game = ref.read(gameRepositoryProvider).getById(gameId);
+  final categoryScores = <String, Map<String, int>>{};
+  final categoryMultipliers = <String, Map<String, int>>{};
+
+  if (game != null && game.scoreType == ScoreType.categories) {
+    for (final pid in playerIds) {
+      categoryScores[pid] = {};
+      categoryMultipliers[pid] = {};
+      for (final cat in game.categories) {
+        categoryScores[pid]![cat.label] = cat.defaultValue ?? 0;
+        categoryMultipliers[pid]![cat.label] = cat.hasMultiplier ? 1 : 1;
+      }
+    }
+  }
+
+  final gamePlayed = GamePlayed(
+    id: _uuid.v4(),
+    gameId: gameId,
+    status: GameStatus.inProgress,
+    playerIds: playerIds,
+    scores: {for (var id in playerIds) id: 0},
+    categoryScores: categoryScores,
+    categoryMultipliers: categoryMultipliers,
+  );
+  ref.read(gamePlayedRepositoryProvider).add(gamePlayed);
+  ref.invalidate(activeGamesProvider);
+  ref.invalidate(gamesByTabProvider);
+  bumpGameVersion(ref);
+  _saveData(ref);
+  return gamePlayed.id;
+}
+
+void updateScore(WidgetRef ref, String gamePlayedId, String playerId, int delta) {
+  final repo = ref.read(gamePlayedRepositoryProvider);
+  final game = repo.getById(gamePlayedId);
+  if (game == null) return;
+
+  final newScores = Map<String, int>.from(game.scores);
+  newScores[playerId] = (newScores[playerId] ?? 0) + delta;
+
+  final entry = ScoreEntry(
+    timestamp: DateTime.now(),
+    scores: Map<String, int>.from(newScores),
+  );
+
+  repo.update(
+    gamePlayedId,
+    game.copyWith(
+      scores: newScores,
+      history: [...game.history, entry],
+    ),
+  );
+  ref.invalidate(activeGamesProvider);
+  ref.invalidate(gamesByTabProvider);
+  bumpGameVersion(ref);
+  _saveData(ref);
+}
+
+void finishGame(WidgetRef ref, String gamePlayedId) {
+  final repo = ref.read(gamePlayedRepositoryProvider);
+  final game = repo.getById(gamePlayedId);
+  if (game == null) return;
+
+  final finishTime = DateTime.now();
+
+  String? winner;
+  int highestScore = -1;
+  game.scores.forEach((playerId, score) {
+    if (score > highestScore) {
+      highestScore = score;
+      winner = playerId;
+    } else if (score == highestScore) {
+      winner = null;
+    }
+  });
+
+  repo.update(
+    gamePlayedId,
+    game.copyWith(
+      status: GameStatus.finished,
+      duration: finishTime.difference(game.date),
+      winnerId: winner,
+    ),
+  );
+  ref.invalidate(activeGamesProvider);
+  ref.invalidate(gamesByTabProvider);
+  bumpGameVersion(ref);
+  _saveData(ref);
+}
+
+void removeHistoryEntry(WidgetRef ref, String gamePlayedId) {
+  ref.read(gamePlayedRepositoryProvider).remove(gamePlayedId);
+  ref.invalidate(gamesByTabProvider);
+  bumpGameVersion(ref);
+  _saveData(ref);
+}
+
+void deletePlayer(WidgetRef ref, String id) {
+  ref.read(playerRepositoryProvider).remove(id);
+  ref.invalidate(allPlayersProvider);
+  bumpGameVersion(ref);
+  _saveData(ref);
+}
+
+void deleteGame(WidgetRef ref, String id) {
+  ref.read(gameRepositoryProvider).remove(id);
+  ref.invalidate(allGamesProvider);
+  ref.invalidate(gamesByTabProvider);
+  bumpGameVersion(ref);
+  _saveData(ref);
+}
+
+void deleteGroup(WidgetRef ref, String id) {
+  ref.read(groupRepositoryProvider).remove(id);
+  ref.invalidate(allGroupsProvider);
+  bumpGameVersion(ref);
+  _saveData(ref);
+}
+
+void addToMyGames(WidgetRef ref, String id) {
+  ref.read(gameRepositoryProvider).addToMyGames(id);
+  ref.invalidate(allGamesProvider);
+  bumpGameVersion(ref);
+  _saveData(ref);
+}
+
+void removeFromMyGames(WidgetRef ref, String id) {
+  ref.read(gameRepositoryProvider).removeFromMyGames(id);
+  ref.invalidate(allGamesProvider);
+  bumpGameVersion(ref);
+  _saveData(ref);
+}
+
+Future<void> saveTheme(WidgetRef ref, ThemeMode mode) async {
+  await PersistenceService.saveThemeMode(mode);
+}
