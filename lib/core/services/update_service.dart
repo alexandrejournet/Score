@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
 
 class UpdateInfo {
   final String latestVersion;
@@ -66,6 +69,50 @@ class UpdateService {
       );
     } catch (_) {
       return null;
+    }
+  }
+
+  static Future<void> downloadAndInstall(
+    UpdateInfo updateInfo,
+    void Function(double progress) onProgress,
+    void Function(String error) onError,
+  ) async {
+    try {
+      final dir = await getTemporaryDirectory();
+      final filePath = '${dir.path}/Score-${updateInfo.latestVersion}.apk';
+      final file = File(filePath);
+
+      final request = http.Request('GET', Uri.parse(updateInfo.downloadUrl));
+      final response = await http.Client().send(request);
+
+      if (response.statusCode != 200) {
+        onError('Download failed: ${response.statusCode}');
+        return;
+      }
+
+      final totalBytes = response.contentLength ?? 0;
+      int downloadedBytes = 0;
+      final sink = file.openWrite();
+
+      await response.stream.listen(
+        (chunk) {
+          sink.add(chunk);
+          downloadedBytes += chunk.length;
+          if (totalBytes > 0) {
+            onProgress(downloadedBytes / totalBytes);
+          }
+        },
+      ).asFuture();
+
+      await sink.close();
+
+      final result = await OpenFilex.open(filePath);
+
+      if (result.type != ResultType.done) {
+        onError('Could not open APK: ${result.message}');
+      }
+    } catch (e) {
+      onError(e.toString());
     }
   }
 }
