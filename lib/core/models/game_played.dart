@@ -108,6 +108,9 @@ class GamePlayed {
         'categoryScores': categoryScores.map(
           (k, v) => MapEntry(k, v),
         ),
+        'categoryMultipliers': categoryMultipliers.map(
+          (k, v) => MapEntry(k, v),
+        ),
         'winnerId': winnerId,
         'history': history.map((e) => e.toJson()).toList(),
       };

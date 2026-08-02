@@ -42,15 +42,25 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
-      - name: Get version from tag
-        id: version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      - name: Rename APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/Score-${{ github.ref_name }}.apk
+
+      - name: Check if prerelease
+        id: prerelease
+        run: |
+          TAG="${{ github.ref_name }}"
+          if [[ "$TAG" == *"alpha"* ]] || [[ "$TAG" == *"beta"* ]]; then
+            echo "IS_PRERELEASE=true" >> $GITHUB_OUTPUT
+          else
+            echo "IS_PRERELEASE=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ steps.version.outputs.VERSION }}
-          files: build/app/outputs/flutter-apk/app-release.apk
+          name: ${{ github.ref_name }}
+          files: build/app/outputs/flutter-apk/Score-${{ github.ref_name }}.apk
           generate_release_notes: true
+          prerelease: ${{ steps.prerelease.outputs.IS_PRERELEASE == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

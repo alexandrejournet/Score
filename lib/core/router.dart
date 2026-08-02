@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'models/game.dart';
+import '../features/splash/splash_screen.dart';
 import '../features/game_detail/game_detail_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/new_game/new_game_screen.dart';
@@ -13,8 +14,13 @@ import '../features/settings/statistics_screen.dart';
 import 'shell.dart';
 
 final router = GoRouter(
-  initialLocation: '/dashboard',
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',
+      name: 'splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
           AppShell(navigationShell: navigationShell),
