@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/models/game_played.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/services/update_service.dart';
 import 'widgets/active_game_card.dart';
 import 'widgets/game_tab_bar.dart';
 import 'widgets/history_card.dart';
@@ -22,6 +24,79 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   String _searchQuery = '';
   bool _showSearch = false;
   bool _showAllInProgress = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkForUpdate();
+  }
+
+  Future<void> _checkForUpdate() async {
+    await Future.delayed(const Duration(seconds: 2));
+    final updateInfo = await UpdateService.checkForUpdate();
+    if (updateInfo != null && updateInfo.hasUpdate && mounted) {
+      _showUpdateDialog(updateInfo);
+    }
+  }
+
+  void _showUpdateDialog(UpdateInfo updateInfo) {
+    final l10n = AppLocalizations.of(context);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Row(
+          children: [
+            const Icon(Icons.system_update, color: AppColors.primary),
+            const SizedBox(width: AppSpacing.sm),
+            Text(l10n.updateAvailable),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.updateMessage),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              '${updateInfo.currentVersion} → ${updateInfo.latestVersion}',
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+            if (updateInfo.isPrerelease) ...[
+              const SizedBox(height: AppSpacing.sm),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.tertiaryLight.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text('Pre-release',
+                    style: TextStyle(fontSize: 12, color: AppColors.tertiaryContainer)),
+              ),
+            ],
+            if (updateInfo.releaseNotes.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.md),
+              Text(updateInfo.releaseNotes,
+                  style: Theme.of(context).textTheme.bodySmall),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.later),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              launchUrl(Uri.parse(updateInfo.downloadUrl));
+            },
+            child: Text(l10n.update),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   void dispose() {

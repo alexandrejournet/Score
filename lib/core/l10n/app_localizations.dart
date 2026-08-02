@@ -89,6 +89,10 @@ class AppLocalizations {
   String get bank => _t('Game bank', 'Banque de jeux');
   String get gamesSubtitle => _t('Browse and manage your game collection.', 'Parcourez et gérez votre collection de jeux.');
   String get playersSubtitle => _t('Create and manage your tabletop players.', 'Créez et gérez vos joueurs de jeux de société.');
+  String get updateAvailable => _t('Update available', 'Mise à jour disponible');
+  String get updateMessage => _t('A new version is available. Would you like to update?', 'Une nouvelle version est disponible. Voulez-vous mettre à jour ?');
+  String get update => _t('Update', 'Mettre à jour');
+  String get later => _t('Later', 'Plus tard');
   String get version => 'SCORE v1.0.0';
 
   String playerRange(int min, int max) {
