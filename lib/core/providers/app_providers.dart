@@ -205,6 +205,66 @@ void finishGame(WidgetRef ref, String gamePlayedId) {
   _saveData(ref);
 }
 
+bool validateSkyjoRound(
+  WidgetRef ref,
+  String gamePlayedId,
+  Map<String, int> roundScores,
+  String finisherId,
+) {
+  final repo = ref.read(gamePlayedRepositoryProvider);
+  final gamePlayed = repo.getById(gamePlayedId);
+  if (gamePlayed == null) return false;
+
+  final lowest = roundScores.values.reduce((a, b) => a < b ? a : b);
+  final appliedScores = Map<String, int>.from(roundScores);
+  if (gamePlayedId.isNotEmpty && finisherId.isNotEmpty) {
+    final finisherScore = appliedScores[finisherId];
+    if (finisherScore != null && finisherScore > lowest) {
+      appliedScores[finisherId] = finisherScore * 2;
+    }
+  }
+
+  final totals = Map<String, int>.from(gamePlayed.scores);
+  for (final entry in appliedScores.entries) {
+    totals[entry.key] = (totals[entry.key] ?? 0) + entry.value;
+  }
+
+  final rounds = [
+    ...gamePlayed.rounds,
+    RoundScore(
+      date: DateTime.now(),
+      scores: appliedScores,
+      finisherId: finisherId,
+    ),
+  ];
+  final history = [
+    ...gamePlayed.history,
+    ScoreEntry(timestamp: DateTime.now(), scores: Map<String, int>.from(totals)),
+  ];
+  final reachedLimit = totals.values.any((score) => score >= 100);
+  String? winnerId;
+  if (reachedLimit) {
+    winnerId = totals.entries.reduce((a, b) => a.value <= b.value ? a : b).key;
+  }
+
+  repo.update(
+    gamePlayedId,
+    gamePlayed.copyWith(
+      scores: totals,
+      rounds: rounds,
+      history: history,
+      status: reachedLimit ? GameStatus.finished : GameStatus.inProgress,
+      winnerId: winnerId,
+    ),
+  );
+  ref.invalidate(activeGamesProvider);
+  ref.invalidate(finishedGamesProvider);
+  ref.invalidate(gamesByTabProvider);
+  bumpGameVersion(ref);
+  _saveData(ref);
+  return reachedLimit;
+}
+
 void removeHistoryEntry(WidgetRef ref, String gamePlayedId) {
   ref.read(gamePlayedRepositoryProvider).remove(gamePlayedId);
   ref.invalidate(gamesByTabProvider);

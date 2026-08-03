@@ -1,5 +1,29 @@
 enum GameStatus { inProgress, paused, finished }
 
+class RoundScore {
+  final DateTime date;
+  final Map<String, int> scores;
+  final String? finisherId;
+
+  const RoundScore({
+    required this.date,
+    required this.scores,
+    this.finisherId,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'date': date.toIso8601String(),
+        'scores': scores,
+        'finisherId': finisherId,
+      };
+
+  factory RoundScore.fromJson(Map<String, dynamic> json) => RoundScore(
+        date: DateTime.parse(json['date'] as String),
+        scores: Map<String, int>.from(json['scores'] as Map),
+        finisherId: json['finisherId'] as String?,
+      );
+}
+
 class ScoreEntry {
   final DateTime timestamp;
   final Map<String, int> scores;
@@ -54,6 +78,7 @@ class GamePlayed {
   final Map<String, Map<String, int>> categoryMultipliers;
   final String? winnerId;
   final List<ScoreEntry> history;
+  final List<RoundScore> rounds;
 
   GamePlayed({
     required this.id,
@@ -67,6 +92,7 @@ class GamePlayed {
     this.categoryMultipliers = const {},
     this.winnerId,
     this.history = const [],
+    this.rounds = const [],
   }) : date = date ?? DateTime.now();
 
   GamePlayed copyWith({
@@ -81,6 +107,7 @@ class GamePlayed {
     Map<String, Map<String, int>>? categoryMultipliers,
     String? winnerId,
     List<ScoreEntry>? history,
+    List<RoundScore>? rounds,
   }) {
     return GamePlayed(
       id: id ?? this.id,
@@ -94,6 +121,7 @@ class GamePlayed {
       categoryMultipliers: categoryMultipliers ?? this.categoryMultipliers,
       winnerId: winnerId ?? this.winnerId,
       history: history ?? this.history,
+      rounds: rounds ?? this.rounds,
     );
   }
 
@@ -113,6 +141,7 @@ class GamePlayed {
         ),
         'winnerId': winnerId,
         'history': history.map((e) => e.toJson()).toList(),
+        'rounds': rounds.map((e) => e.toJson()).toList(),
       };
 
   factory GamePlayed.fromJson(Map<String, dynamic> json) => GamePlayed(
@@ -138,6 +167,9 @@ class GamePlayed {
         winnerId: json['winnerId'] as String?,
         history: (json['history'] as List)
             .map((e) => ScoreEntry.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        rounds: (json['rounds'] as List? ?? [])
+            .map((e) => RoundScore.fromJson(e as Map<String, dynamic>))
             .toList(),
       );
 }

@@ -15,9 +15,9 @@ void main() {
       container.dispose();
     });
 
-    test('allGamesProvider returns 4 default games', () {
+    test('allGamesProvider returns 6 default games', () {
       final games = container.read(allGamesProvider);
-      expect(games.length, 4);
+      expect(games.length, 6);
     });
 
     test('allPlayersProvider starts empty', () {

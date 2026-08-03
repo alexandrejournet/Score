@@ -93,6 +93,15 @@ class AppLocalizations {
   String get updateMessage => _t('A new version is available. Would you like to update?', 'Une nouvelle version est disponible. Voulez-vous mettre à jour ?');
   String get update => _t('Update', 'Mettre à jour');
   String get later => _t('Later', 'Plus tard');
+  String get roundScore => _t('Round score', 'Score de la manche');
+  String get cumulativeScore => _t('Cumulative score', 'Score cumulé');
+  String get validateRound => _t('Validate round', 'Valider la manche');
+  String get roundEndedBy => _t('Round ended by', 'Fin de manche déclenchée par');
+  String get noFinisher => _t('Select who ended the round', 'Sélectionnez le joueur qui a terminé la manche');
+  String get roundHistory => _t('Round history', 'Historique des manches');
+  String get roundNumber => _t('Round', 'Manche');
+  String get gameOver => _t('Game over', 'Fin de partie');
+  String get winner => _t('Winner', 'Vainqueur');
   String get version => 'SCORE v1.0.0';
 
   String playerRange(int min, int max) {

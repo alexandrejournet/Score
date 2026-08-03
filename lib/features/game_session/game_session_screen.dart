@@ -11,6 +11,7 @@ import '../../../core/models/game.dart';
 import '../../../core/models/player.dart';
 import '../../../core/providers/app_providers.dart';
 import 'category_game_screen.dart';
+import 'skyjo_game_screen.dart';
 
 Future<void> _showScoreDialog(
   BuildContext context,
@@ -573,6 +574,9 @@ class _GameSessionScreenState extends ConsumerState<GameSessionScreen> {
 
     if (game != null && game.scoreType == ScoreType.categories && game.categories.isNotEmpty) {
       return CategoryGameScreen(gamePlayedId: widget.gamePlayedId);
+    }
+    if (game != null && game.scoreType == ScoreType.rounds) {
+      return SkyjoGameScreen(gamePlayedId: widget.gamePlayedId);
     }
 
     final players = ref.watch(allPlayersProvider);

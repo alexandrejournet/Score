@@ -41,7 +41,9 @@ class ResultsScreen extends ConsumerWidget {
     sortedPlayers.sort((a, b) {
       final scoreB = gamePlayed.scores[b.id] ?? 0;
       final scoreA = gamePlayed.scores[a.id] ?? 0;
-      return scoreB.compareTo(scoreA);
+      return game?.lowerScoreWins == true
+          ? scoreA.compareTo(scoreB)
+          : scoreB.compareTo(scoreA);
     });
 
     final winner = sortedPlayers.isNotEmpty ? sortedPlayers.first : null;

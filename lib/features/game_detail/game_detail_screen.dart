@@ -149,6 +149,8 @@ class GameDetailScreen extends StatelessWidget {
         return 'Temps';
       case ScoreType.categories:
         return l10n.gridLabel;
+      case ScoreType.rounds:
+        return l10n.roundNumber;
       case ScoreType.custom:
         return 'Custom';
     }

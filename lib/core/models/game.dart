@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-enum ScoreType { points, time, custom, categories }
+enum ScoreType { points, time, custom, categories, rounds }
 
 class ScoringCategory {
   final String label;
@@ -49,6 +49,9 @@ class Game {
   final bool allowMultiSelect;
   final List<ScoringCategory> categories;
   final String? rules;
+  final int? endScore;
+  final bool lowerScoreWins;
+  final bool doubleFinisherIfNotLowest;
 
   const Game({
     required this.id,
@@ -64,6 +67,9 @@ class Game {
     this.allowMultiSelect = false,
     this.categories = const [],
     this.rules,
+    this.endScore,
+    this.lowerScoreWins = false,
+    this.doubleFinisherIfNotLowest = false,
   });
 
   Game copyWith({
@@ -80,6 +86,9 @@ class Game {
     bool? allowMultiSelect,
     List<ScoringCategory>? categories,
     String? rules,
+    int? endScore,
+    bool? lowerScoreWins,
+    bool? doubleFinisherIfNotLowest,
   }) {
     return Game(
       id: id ?? this.id,
@@ -95,6 +104,9 @@ class Game {
       allowMultiSelect: allowMultiSelect ?? this.allowMultiSelect,
       categories: categories ?? this.categories,
       rules: rules ?? this.rules,
+      endScore: endScore ?? this.endScore,
+      lowerScoreWins: lowerScoreWins ?? this.lowerScoreWins,
+      doubleFinisherIfNotLowest: doubleFinisherIfNotLowest ?? this.doubleFinisherIfNotLowest,
     );
   }
 
@@ -112,6 +124,9 @@ class Game {
         'allowMultiSelect': allowMultiSelect,
         'categories': categories.map((c) => c.toJson()).toList(),
         'rules': rules,
+        'endScore': endScore,
+        'lowerScoreWins': lowerScoreWins,
+        'doubleFinisherIfNotLowest': doubleFinisherIfNotLowest,
       };
 
   factory Game.fromJson(Map<String, dynamic> json) => Game(
@@ -132,5 +147,8 @@ class Game {
                 .toList()
             : [],
         rules: json['rules'] as String?,
+        endScore: json['endScore'] as int?,
+        lowerScoreWins: json['lowerScoreWins'] as bool? ?? false,
+        doubleFinisherIfNotLowest: json['doubleFinisherIfNotLowest'] as bool? ?? false,
       );
 }

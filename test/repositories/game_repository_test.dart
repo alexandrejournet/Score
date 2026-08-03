@@ -11,17 +11,17 @@ void main() {
     });
 
     test('initializes with default games', () {
-      expect(repo.builtIn.length, 4);
-      expect(repo.builtIn.map((g) => g.id), containsAll(['flip7', 'mille-sabords', 'akropolis', 'chateau-combo']));
+      expect(repo.builtIn.length, 6);
+      expect(repo.builtIn.map((g) => g.id), containsAll(['flip7', 'mille-sabords', 'akropolis', 'chateau-combo', 'symbiose', 'skyjo']));
     });
 
     test('all returns built-in + custom games', () {
       repo.addCustom(const Game(id: 'custom1', name: 'Custom'));
-      expect(repo.all.length, 5);
+      expect(repo.all.length, 7);
     });
 
     test('myGames returns all by default', () {
-      expect(repo.myGames.length, 4);
+      expect(repo.myGames.length, 6);
     });
 
     test('bank returns empty by default (all games are in my games)', () {
@@ -37,11 +37,11 @@ void main() {
     test('addToMyGames and removeFromMyGames', () {
       repo.removeFromMyGames('flip7');
       expect(repo.isInMyGames('flip7'), false);
-      expect(repo.myGames.length, 3);
+      expect(repo.myGames.length, 5);
 
       repo.addToMyGames('flip7');
       expect(repo.isInMyGames('flip7'), true);
-      expect(repo.myGames.length, 4);
+      expect(repo.myGames.length, 6);
     });
 
     test('getById returns correct game', () {
@@ -87,7 +87,7 @@ void main() {
       );
 
       expect(customRepo.myGames.length, 2);
-      expect(customRepo.bank.length, 3);
+      expect(customRepo.bank.length, 5);
     });
   });
 }
