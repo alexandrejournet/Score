@@ -528,6 +528,10 @@ class _CategoryInputs extends StatelessWidget {
                       onChanged: (v) {
                         conditionToggled[cat.label]![player.id] = v;
                         localMultipliers[cat.label]![player.id] = v ? 2 : 1;
+                        final ctrl = multControllers[cat.label]?[player.id];
+                        if (ctrl != null) {
+                          ctrl.text = v ? '2' : '';
+                        }
                         onChanged();
                       },
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -569,7 +573,7 @@ class _CategoryInputs extends StatelessWidget {
                     },
                   ),
                 ),
-                if (cat.hasMultiplier && !advancedScoring) ...[
+                if (cat.hasMultiplier) ...[
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                     child: Text('×',
