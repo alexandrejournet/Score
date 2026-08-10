@@ -6,12 +6,21 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/services/update_service.dart';
+import '../../../core/ui/update_dialog.dart';
 
-class SettingsScreen extends ConsumerWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  bool _checking = false;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final groups = ref.watch(allGroupsProvider);
     final themeMode = ref.watch(themeModeProvider);
@@ -51,15 +60,80 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: l10n.groupsCount(groups.length),
             onTap: () => context.pushNamed('settings-groups'),
           ),
+          const SizedBox(height: AppSpacing.lg),
+          _SectionTitle(title: _t(l10n, 'About', 'À propos')),
+          Card(
+            margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+            child: ListTile(
+              leading: _checking
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.system_update),
+              title: Text(l10n.checkForUpdates),
+              subtitle: _VersionSubtitle(),
+              trailing: _checking ? null : const Icon(Icons.chevron_right),
+              onTap: _checking ? null : _checkForUpdate,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            ),
+          ),
           const SizedBox(height: AppSpacing.xl),
-          _VersionLabel(),
         ],
       ),
     );
   }
+
+  Future<void> _checkForUpdate() async {
+    setState(() => _checking = true);
+
+    try {
+      final updateInfo = await UpdateService.checkForUpdate();
+      if (!mounted) return;
+
+      if (updateInfo != null && updateInfo.hasUpdate) {
+        final l10n = AppLocalizations.of(context);
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (ctx) => UpdateDialog(updateInfo: updateInfo, l10n: l10n),
+          );
+        }
+      } else {
+        if (mounted) {
+          final l10n = AppLocalizations.of(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.upToDate),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          );
+        }
+      }
+    } catch (_) {
+      if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.updateCheckFailed),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _checking = false);
+    }
+  }
+
+  String _t(AppLocalizations l10n, String en, String fr) {
+    return l10n.locale.languageCode == 'fr' ? fr : en;
+  }
 }
 
-class _VersionLabel extends StatelessWidget {
+class _VersionSubtitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<PackageInfo>(
@@ -67,10 +141,8 @@ class _VersionLabel extends StatelessWidget {
       builder: (context, snapshot) {
         final version = snapshot.data?.version ?? '...';
         final build = snapshot.data?.buildNumber ?? '';
-        return Center(
-          child: Text('SCORE v$version+$build',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.outline)),
-        );
+        return Text('SCORE v$version+$build',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.outline));
       },
     );
   }

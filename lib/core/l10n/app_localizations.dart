@@ -109,6 +109,10 @@ class AppLocalizations {
         'Enable conditional ×2 multipliers for each district',
         'Activer les multiplicateurs ×2 conditionnels pour chaque quartier',
       );
+  String get checkForUpdates => _t('Check for updates', 'Vérifier les mises à jour');
+  String get checkingForUpdates => _t('Checking...', 'Vérification...');
+  String get upToDate => _t('You are up to date!', 'Vous êtes à jour !');
+  String get updateCheckFailed => _t('Could not check for updates', 'Impossible de vérifier les mises à jour');
 
   String playerRange(int min, int max) {
     final range = '$min-$max';
