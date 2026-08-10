@@ -26,18 +26,21 @@ class UpdateInfo {
 /// Compare two version strings like 'v0.0.1-alpha.10' vs 'v0.0.1-alpha.9'.
 /// Returns positive if a > b, zero if equal, negative if a < b.
 int _compareVersions(String a, String b) {
-  final parse = (String s) {
-    final stripped = s.startsWith('v') ? s.substring(1) : s;
-    final parts = stripped.split(RegExp(r'[-.]'));
-    return parts.map((p) => int.tryParse(p) ?? p.codeUnits.fold(0, (a, b) => a + b)).toList();
-  };
-  final pa = parse(a);
-  final pb = parse(b);
+  final pa = _parseVersion(a);
+  final pb = _parseVersion(b);
   for (int i = 0; i < pa.length && i < pb.length; i++) {
     final c = (pa[i] as Comparable).compareTo(pb[i]);
     if (c != 0) return c;
   }
   return pa.length.compareTo(pb.length);
+}
+
+List<Comparable<Object>> _parseVersion(String s) {
+  final stripped = s.startsWith('v') ? s.substring(1) : s;
+  return stripped
+      .split(RegExp(r'[-.]'))
+      .map((p) => int.tryParse(p) ?? (p.codeUnits.fold<int>(0, (acc, b) => acc + b) as Comparable<Object>))
+      .toList();
 }
 
 class UpdateService {
