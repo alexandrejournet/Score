@@ -20,7 +20,24 @@ class UpdateInfo {
     required this.isPrerelease,
   });
 
-  bool get hasUpdate => latestVersion != currentVersion;
+  bool get hasUpdate => _compareVersions(latestVersion, currentVersion) > 0;
+}
+
+/// Compare two version strings like 'v0.0.1-alpha.10' vs 'v0.0.1-alpha.9'.
+/// Returns positive if a > b, zero if equal, negative if a < b.
+int _compareVersions(String a, String b) {
+  final parse = (String s) {
+    final stripped = s.startsWith('v') ? s.substring(1) : s;
+    final parts = stripped.split(RegExp(r'[-.]'));
+    return parts.map((p) => int.tryParse(p) ?? p.codeUnits.fold(0, (a, b) => a + b)).toList();
+  };
+  final pa = parse(a);
+  final pb = parse(b);
+  for (int i = 0; i < pa.length && i < pb.length; i++) {
+    final c = (pa[i] as Comparable).compareTo(pb[i]);
+    if (c != 0) return c;
+  }
+  return pa.length.compareTo(pb.length);
 }
 
 class UpdateService {
@@ -43,10 +60,19 @@ class UpdateService {
       final releases = jsonDecode(response.body) as List;
       if (releases.isEmpty) return null;
 
+      // Sort by version number, not creation date (GitHub API sorts by created_at)
+      releases.sort((a, b) {
+        final tagA = (a as Map<String, dynamic>)['tag_name'] as String;
+        final tagB = (b as Map<String, dynamic>)['tag_name'] as String;
+        return _compareVersions(tagB, tagA); // descending
+      });
+
       final latest = releases.first as Map<String, dynamic>;
       final latestTag = latest['tag_name'] as String;
       final isPrerelease = latest['prerelease'] as bool;
       final releaseNotes = latest['body'] as String? ?? '';
+
+      if (_compareVersions(latestTag, currentVersion) <= 0) return null;
 
       String? apkUrl;
       final assets = latest['assets'] as List? ?? [];
@@ -57,8 +83,6 @@ class UpdateService {
           break;
         }
       }
-
-      if (latestTag == currentVersion) return null;
 
       return UpdateInfo(
         latestVersion: latestTag,
