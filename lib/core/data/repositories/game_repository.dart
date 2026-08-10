@@ -40,6 +40,7 @@ final defaultGames = [
       ScoringCategory(label: 'Bonus architectes', description: 'Tuiles spéciales', maxValue: 50),
     ],
     rules: 'Construisez votre cité en 3D. Chaque quartier score selon sa hauteur et sa position.',
+    hasAdvancedScoring: true,
   ),
   Game(
     id: 'chateau-combo',

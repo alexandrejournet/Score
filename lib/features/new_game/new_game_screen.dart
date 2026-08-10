@@ -21,6 +21,7 @@ class _NewGameScreenState extends ConsumerState<NewGameScreen> {
   String? _selectedGameId;
   final Set<String> _selectedPlayerIds = {};
   String? _selectedGroupId;
+  bool _advancedScoring = false;
   final _playerNameController = TextEditingController();
 
   @override
@@ -76,6 +77,17 @@ class _NewGameScreenState extends ConsumerState<NewGameScreen> {
               l10n.playerRange(selectedGame.minPlayers, selectedGame.maxPlayers),
               style: Theme.of(context).textTheme.labelSmall,
             ),
+            if (selectedGame.hasAdvancedScoring) ...[
+              const SizedBox(height: AppSpacing.md),
+              SwitchListTile(
+                title: Text(l10n.advancedScoring),
+                subtitle: Text(l10n.advancedScoringDescription),
+                value: _advancedScoring,
+                onChanged: (v) => setState(() => _advancedScoring = v),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ],
           ],
           const SizedBox(height: AppSpacing.lg),
           Row(
@@ -261,7 +273,7 @@ class _NewGameScreenState extends ConsumerState<NewGameScreen> {
       }
     }
 
-    final gamePlayedId = startGame(ref, gameId, playerIds);
+    final gamePlayedId = startGame(ref, gameId, playerIds, advancedScoring: _advancedScoring);
     context.pushNamed('game-session', extra: gamePlayedId);
   }
 }

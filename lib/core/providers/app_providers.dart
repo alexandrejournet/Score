@@ -114,7 +114,7 @@ void addGroup(WidgetRef ref, Group group) {
   _saveData(ref);
 }
 
-String startGame(WidgetRef ref, String gameId, List<String> playerIds) {
+String startGame(WidgetRef ref, String gameId, List<String> playerIds, {bool advancedScoring = false}) {
   final game = ref.read(gameRepositoryProvider).getById(gameId);
   final categoryScores = <String, Map<String, int>>{};
   final categoryMultipliers = <String, Map<String, int>>{};
@@ -138,6 +138,7 @@ String startGame(WidgetRef ref, String gameId, List<String> playerIds) {
     scores: {for (var id in playerIds) id: 0},
     categoryScores: categoryScores,
     categoryMultipliers: categoryMultipliers,
+    advancedScoringEnabled: advancedScoring,
   );
   ref.read(gamePlayedRepositoryProvider).add(gamePlayed);
   ref.invalidate(activeGamesProvider);

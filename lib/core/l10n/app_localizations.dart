@@ -104,6 +104,12 @@ class AppLocalizations {
   String get winner => _t('Winner', 'Vainqueur');
   String get version => 'SCORE v1.0.0';
 
+  String get advancedScoring => _t('Advanced scoring', 'Variantes avancées');
+  String get advancedScoringDescription => _t(
+        'Enable conditional ×2 multipliers for each district',
+        'Activer les multiplicateurs ×2 conditionnels pour chaque quartier',
+      );
+
   String playerRange(int min, int max) {
     final range = '$min-$max';
     if (locale.languageCode == 'fr') return '$range joueurs';

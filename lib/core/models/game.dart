@@ -52,6 +52,7 @@ class Game {
   final int? endScore;
   final bool lowerScoreWins;
   final bool doubleFinisherIfNotLowest;
+  final bool hasAdvancedScoring;
 
   const Game({
     required this.id,
@@ -70,6 +71,7 @@ class Game {
     this.endScore,
     this.lowerScoreWins = false,
     this.doubleFinisherIfNotLowest = false,
+    this.hasAdvancedScoring = false,
   });
 
   Game copyWith({
@@ -89,6 +91,7 @@ class Game {
     int? endScore,
     bool? lowerScoreWins,
     bool? doubleFinisherIfNotLowest,
+    bool? hasAdvancedScoring,
   }) {
     return Game(
       id: id ?? this.id,
@@ -107,6 +110,7 @@ class Game {
       endScore: endScore ?? this.endScore,
       lowerScoreWins: lowerScoreWins ?? this.lowerScoreWins,
       doubleFinisherIfNotLowest: doubleFinisherIfNotLowest ?? this.doubleFinisherIfNotLowest,
+      hasAdvancedScoring: hasAdvancedScoring ?? this.hasAdvancedScoring,
     );
   }
 
@@ -127,6 +131,7 @@ class Game {
         'endScore': endScore,
         'lowerScoreWins': lowerScoreWins,
         'doubleFinisherIfNotLowest': doubleFinisherIfNotLowest,
+        'hasAdvancedScoring': hasAdvancedScoring,
       };
 
   factory Game.fromJson(Map<String, dynamic> json) => Game(
@@ -150,5 +155,6 @@ class Game {
         endScore: json['endScore'] as int?,
         lowerScoreWins: json['lowerScoreWins'] as bool? ?? false,
         doubleFinisherIfNotLowest: json['doubleFinisherIfNotLowest'] as bool? ?? false,
+        hasAdvancedScoring: json['hasAdvancedScoring'] as bool? ?? false,
       );
 }

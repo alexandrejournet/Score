@@ -25,6 +25,8 @@ class _CategoryGameScreenState extends ConsumerState<CategoryGameScreen> {
   late Map<String, Map<String, TextEditingController>> _multControllers;
   late Map<String, Map<String, int>> _localCounts;
   late Map<String, Map<String, int>> _localMultipliers;
+  late Map<String, Map<String, bool>> _conditionToggled;
+  bool _advancedScoring = false;
   Player? _activePlayer;
   late List<ScoringCategory> _categories;
 
@@ -41,27 +43,30 @@ class _CategoryGameScreenState extends ConsumerState<CategoryGameScreen> {
     final game = games.where((g) => g.id == gp?.gameId).firstOrNull;
     if (gp == null || game == null) return;
 
+    _advancedScoring = gp.advancedScoringEnabled;
     _categories = game.categories;
     _countControllers = {};
     _multControllers = {};
     _localCounts = {};
     _localMultipliers = {};
+    _conditionToggled = {};
 
     for (final cat in _categories) {
       _localCounts[cat.label] = {};
       _localMultipliers[cat.label] = {};
+      _conditionToggled[cat.label] = {};
       _countControllers[cat.label] = {};
       _multControllers[cat.label] = {};
       for (final pid in gp.playerIds) {
         final existing = gp.categoryScores[pid]?[cat.label] ?? cat.defaultValue ?? 0;
-        final existingMult = gp.categoryMultipliers[pid]?[cat.label] ??
-            (cat.hasMultiplier ? 1 : 1);
+        final existingMult = gp.categoryMultipliers[pid]?[cat.label] ?? 1;
         _localCounts[cat.label]![pid] = existing;
         _localMultipliers[cat.label]![pid] = existingMult;
+        _conditionToggled[cat.label]![pid] = existingMult == 2 && _advancedScoring;
         _countControllers[cat.label]![pid] =
             TextEditingController(text: existing > 0 ? '$existing' : '');
         _multControllers[cat.label]![pid] =
-            TextEditingController(text: cat.hasMultiplier ? '$existingMult' : '');
+            TextEditingController(text: cat.hasMultiplier && !_advancedScoring ? '$existingMult' : '');
       }
     }
   }
@@ -149,6 +154,8 @@ class _CategoryGameScreenState extends ConsumerState<CategoryGameScreen> {
                     multControllers: _multControllers,
                     localCounts: _localCounts,
                     localMultipliers: _localMultipliers,
+                    advancedScoring: _advancedScoring,
+                    conditionToggled: _conditionToggled,
                     onChanged: () {
                       setState(() {});
                       _saveProgress();
@@ -348,6 +355,8 @@ class _CategoryInputs extends StatelessWidget {
   final Map<String, Map<String, TextEditingController>> multControllers;
   final Map<String, Map<String, int>> localCounts;
   final Map<String, Map<String, int>> localMultipliers;
+  final bool advancedScoring;
+  final Map<String, Map<String, bool>> conditionToggled;
   final VoidCallback onChanged;
 
   const _CategoryInputs({
@@ -357,8 +366,21 @@ class _CategoryInputs extends StatelessWidget {
     required this.multControllers,
     required this.localCounts,
     required this.localMultipliers,
+    required this.advancedScoring,
+    required this.conditionToggled,
     required this.onChanged,
   });
+
+  String _conditionFor(String catLabel) {
+    switch (catLabel) {
+      case 'Plazas': return '×2 si > 10';
+      case 'Jardins': return '×2 si lac adjacent';
+      case 'Caserne': return '×2 si 3+ côtés libres';
+      case 'Temple': return '×2 si niveau 2+';
+      case 'Marché': return '×2 si adjacent à étoile';
+      default: return '';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -488,6 +510,31 @@ class _CategoryInputs extends StatelessWidget {
             ),
             if (cat.description != null)
               Text(cat.description!, style: Theme.of(context).textTheme.labelSmall),
+            if (advancedScoring && _conditionFor(cat.label).isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  children: [
+                    Text(
+                      _conditionFor(cat.label),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: AppColors.secondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                    const Spacer(),
+                    Switch(
+                      value: conditionToggled[cat.label]?[player.id] ?? false,
+                      onChanged: (v) {
+                        conditionToggled[cat.label]![player.id] = v;
+                        localMultipliers[cat.label]![player.id] = v ? 2 : 1;
+                        onChanged();
+                      },
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  ],
+                ),
+              ),
             const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
@@ -522,7 +569,7 @@ class _CategoryInputs extends StatelessWidget {
                     },
                   ),
                 ),
-                if (cat.hasMultiplier) ...[
+                if (cat.hasMultiplier && !advancedScoring) ...[
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                     child: Text('×',

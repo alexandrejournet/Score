@@ -79,6 +79,7 @@ class GamePlayed {
   final String? winnerId;
   final List<ScoreEntry> history;
   final List<RoundScore> rounds;
+  final bool advancedScoringEnabled;
 
   GamePlayed({
     required this.id,
@@ -93,6 +94,7 @@ class GamePlayed {
     this.winnerId,
     this.history = const [],
     this.rounds = const [],
+    this.advancedScoringEnabled = false,
   }) : date = date ?? DateTime.now();
 
   GamePlayed copyWith({
@@ -108,6 +110,7 @@ class GamePlayed {
     String? winnerId,
     List<ScoreEntry>? history,
     List<RoundScore>? rounds,
+    bool? advancedScoringEnabled,
   }) {
     return GamePlayed(
       id: id ?? this.id,
@@ -122,6 +125,7 @@ class GamePlayed {
       winnerId: winnerId ?? this.winnerId,
       history: history ?? this.history,
       rounds: rounds ?? this.rounds,
+      advancedScoringEnabled: advancedScoringEnabled ?? this.advancedScoringEnabled,
     );
   }
 
@@ -142,6 +146,7 @@ class GamePlayed {
         'winnerId': winnerId,
         'history': history.map((e) => e.toJson()).toList(),
         'rounds': rounds.map((e) => e.toJson()).toList(),
+        'advancedScoringEnabled': advancedScoringEnabled,
       };
 
   factory GamePlayed.fromJson(Map<String, dynamic> json) => GamePlayed(
@@ -171,5 +176,6 @@ class GamePlayed {
         rounds: (json['rounds'] as List? ?? [])
             .map((e) => RoundScore.fromJson(e as Map<String, dynamic>))
             .toList(),
+        advancedScoringEnabled: json['advancedScoringEnabled'] as bool? ?? false,
       );
 }
