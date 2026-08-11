@@ -202,7 +202,7 @@ class HistoryCard extends ConsumerWidget {
                   radius: 14,
                   backgroundColor: player?.color ?? color,
                   child: Text(
-                    player?.name.isNotEmpty == true ? player!.name[0].toUpperCase() : '?',
+                    player?.avatar ?? (player?.name.isNotEmpty == true ? player!.name[0].toUpperCase() : '?'),
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,

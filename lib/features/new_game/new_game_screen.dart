@@ -174,7 +174,7 @@ class _NewGameScreenState extends ConsumerState<NewGameScreen> {
                     radius: 12,
                     backgroundColor: player.color.withValues(alpha: 0.2),
                     child: Text(
-                      player.name.isNotEmpty ? player.name[0].toUpperCase() : '?',
+                      player.avatar ?? (player.name.isNotEmpty ? player.name[0].toUpperCase() : '?'),
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,

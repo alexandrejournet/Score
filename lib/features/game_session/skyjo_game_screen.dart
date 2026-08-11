@@ -120,7 +120,7 @@ class _SkyjoGameScreenState extends ConsumerState<SkyjoGameScreen> {
           children: [
             CircleAvatar(
               backgroundColor: player.color,
-              child: Text(player.name[0].toUpperCase(), style: const TextStyle(color: Colors.white)),
+              child: Text(player.avatar ?? player.name[0].toUpperCase(), style: const TextStyle(color: Colors.white)),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(child: Text(player.name, style: Theme.of(context).textTheme.bodyLarge)),

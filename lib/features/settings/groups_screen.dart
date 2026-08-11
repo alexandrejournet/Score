@@ -59,7 +59,7 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
                             backgroundColor: player.color.withValues(alpha: 0.2),
                             child: Text(
                               player.name.isNotEmpty
-                                  ? player.name[0].toUpperCase()
+                                  ? player.avatar ?? player.name[0].toUpperCase()
                                   : '?',
                               style: TextStyle(
                                 fontSize: 8,

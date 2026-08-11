@@ -296,7 +296,7 @@ class _PlayerResultCardState extends State<_PlayerResultCard> {
                     radius: 16,
                     backgroundColor: widget.player.color.withValues(alpha: 0.2),
                     child: Text(
-                      widget.player.name[0].toUpperCase(),
+                      widget.player.avatar ?? widget.player.name[0].toUpperCase(),
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         color: widget.player.color,

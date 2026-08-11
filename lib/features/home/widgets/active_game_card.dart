@@ -122,7 +122,7 @@ class ActiveGameCard extends ConsumerWidget {
                           radius: 10,
                           backgroundColor: leader.color.withValues(alpha: 0.2),
                           child: Text(
-                            leader.name[0].toUpperCase(),
+                            leader.avatar ?? leader.name[0].toUpperCase(),
                             style: TextStyle(
                                 fontSize: 8, fontWeight: FontWeight.w700, color: leader.color),
                           ),
@@ -197,7 +197,7 @@ class _PlayerAvatars extends StatelessWidget {
                   radius: 14,
                   backgroundColor: player.color,
                   child: Text(
-                    player.name.isNotEmpty ? player.name[0].toUpperCase() : '?',
+                    player.name.isNotEmpty ? player.avatar ?? player.name[0].toUpperCase() : '?',
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,

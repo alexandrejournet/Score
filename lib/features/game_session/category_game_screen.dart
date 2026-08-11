@@ -311,7 +311,7 @@ class _PlayerSelector extends StatelessWidget {
                             radius: 12,
                             backgroundColor: p.color.withValues(alpha: 0.3),
                             child: Text(
-                              p.name[0].toUpperCase(),
+                              p.avatar ?? p.name[0].toUpperCase(),
                               style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w700,

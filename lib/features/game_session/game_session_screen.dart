@@ -140,7 +140,7 @@ class _ScoreDialogState extends State<_ScoreDialog> {
           CircleAvatar(
             radius: 20,
             backgroundColor: widget.player.color.withValues(alpha: 0.2),
-            child: Text(widget.player.name[0].toUpperCase(),
+            child: Text(widget.player.avatar ?? widget.player.name[0].toUpperCase(),
                 style: TextStyle(fontWeight: FontWeight.w700, color: widget.player.color)),
           ),
           const SizedBox(width: 12),
@@ -281,7 +281,7 @@ void _showRanking(BuildContext context, WidgetRef ref, String gamePlayedId, Game
                       CircleAvatar(
                         radius: 16,
                         backgroundColor: player.color.withValues(alpha: 0.2),
-                        child: Text(player.name[0].toUpperCase(),
+                        child: Text(player.avatar ?? player.name[0].toUpperCase(),
                             style: TextStyle(fontWeight: FontWeight.w700, color: player.color)),
                       ),
                       const SizedBox(width: AppSpacing.md),
@@ -387,7 +387,7 @@ class _AddPlayerSheetState extends State<_AddPlayerSheet> {
                   avatar: CircleAvatar(
                     radius: 12,
                     backgroundColor: player.color.withValues(alpha: 0.2),
-                    child: Text(player.name[0].toUpperCase(),
+                    child: Text(player.avatar ?? player.name[0].toUpperCase(),
                         style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: player.color)),
                   ),
                   label: Text(player.name),
@@ -552,7 +552,7 @@ void _showHistory(BuildContext context, WidgetRef ref, String gamePlayedId, Game
                                                 .withValues(alpha: 0.2),
                                             child: Text(
                                               player?.name.isNotEmpty == true
-                                                  ? player!.name[0].toUpperCase()
+                                                  ? (player!.avatar ?? player!.name[0].toUpperCase())
                                                   : '?',
                                               style: TextStyle(
                                                   fontSize: 8,
@@ -728,7 +728,7 @@ class _GameSessionScreenState extends ConsumerState<GameSessionScreen> {
                           CircleAvatar(
                             radius: 18,
                             backgroundColor: player.color.withValues(alpha: 0.2),
-                            child: Text(player.name.isNotEmpty ? player.name[0].toUpperCase() : '?',
+                            child: Text(player.name.isNotEmpty ? player.avatar ?? player.name[0].toUpperCase() : '?',
                                 style: TextStyle(fontWeight: FontWeight.w700, color: player.color)),
                           ),
                           const SizedBox(width: AppSpacing.md),
