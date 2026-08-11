@@ -7,6 +7,7 @@ class PulseScore extends StatefulWidget {
   final Color color;
   final FontWeight fontWeight;
   final String? suffix;
+  final bool animate;
 
   const PulseScore({
     super.key,
@@ -15,6 +16,7 @@ class PulseScore extends StatefulWidget {
     this.color = Colors.black,
     this.fontWeight = FontWeight.w800,
     this.suffix,
+    this.animate = true,
   });
 
   @override
@@ -43,7 +45,7 @@ class _PulseScoreState extends State<PulseScore> with SingleTickerProviderStateM
   @override
   void didUpdateWidget(PulseScore oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.value != _previousValue) {
+    if (widget.value != _previousValue && widget.animate) {
       _previousValue = widget.value;
       _controller.forward(from: 0);
     }

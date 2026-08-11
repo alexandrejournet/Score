@@ -730,6 +730,7 @@ class _GameSessionScreenState extends ConsumerState<GameSessionScreen> {
                                       value: score,
                                       fontSize: 28,
                                       color: AppColors.onSurface,
+                                      animate: !_multiSelectMode,
                                   ),
                                 ),
                               ),
