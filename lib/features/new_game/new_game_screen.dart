@@ -95,7 +95,7 @@ class _NewGameScreenState extends ConsumerState<NewGameScreen> {
               Text(l10n.group, style: Theme.of(context).textTheme.labelLarge),
               const Spacer(),
               TextButton.icon(
-                onPressed: () => context.pushNamed('settings-groups'),
+                onPressed: () => context.go('/settings/groups'),
                 icon: const Icon(Icons.add, size: 16),
                 label: Text(l10n.create),
                 style: TextButton.styleFrom(
