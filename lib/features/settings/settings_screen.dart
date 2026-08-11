@@ -26,6 +26,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final groups = ref.watch(allGroupsProvider);
     final themeMode = ref.watch(themeModeProvider);
     final hapticEnabled = ref.watch(hapticEnabledProvider);
+    final updateChannel = ref.watch(updateChannelProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings)),
@@ -62,6 +63,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ref.read(hapticEnabledProvider.notifier).state = value;
               PersistenceService.saveHapticEnabled(value);
             },
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          ),
+          ListTile(
+            leading: const Icon(Icons.update),
+            title: Text(l10n.updateChannel),
+            subtitle: Text(updateChannel == 'alpha' ? 'Alpha' : 'Stable'),
+            trailing: SegmentedButton<String>(
+              segments: const [
+                ButtonSegment(value: 'stable', label: Text('Stable')),
+                ButtonSegment(value: 'alpha', label: Text('Alpha')),
+              ],
+              selected: {updateChannel},
+              onSelectionChanged: (v) {
+                ref.read(updateChannelProvider.notifier).state = v.first;
+                PersistenceService.saveUpdateChannel(v.first);
+              },
+              style: ButtonStyle(
+                visualDensity: VisualDensity.compact,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -106,7 +128,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     setState(() => _checking = true);
 
     try {
-      final updateInfo = await UpdateService.checkForUpdate();
+      final channel = ref.read(updateChannelProvider);
+      final updateInfo = await UpdateService.checkForUpdate(channel: channel);
       if (!mounted) return;
 
       if (updateInfo != null && updateInfo.hasUpdate) {

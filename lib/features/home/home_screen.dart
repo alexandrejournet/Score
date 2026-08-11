@@ -33,7 +33,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> _checkForUpdate() async {
     await Future.delayed(const Duration(seconds: 2));
-    final updateInfo = await UpdateService.checkForUpdate();
+    final updateInfo = await UpdateService.checkForUpdate(channel: 'alpha');
     if (updateInfo != null && updateInfo.hasUpdate && mounted) {
       _showUpdateDialog(updateInfo);
     }

@@ -16,6 +16,7 @@ const _uuid = Uuid();
 
 final themeModeProvider = StateProvider<ThemeMode>((ref) => PersistenceService.loadThemeMode());
 final hapticEnabledProvider = StateProvider<bool>((ref) => PersistenceService.loadHapticEnabled());
+final updateChannelProvider = StateProvider<String>((ref) => PersistenceService.loadUpdateChannel());
 final gameDataVersionProvider = StateProvider<int>((ref) => 0);
 
 void bumpGameVersion(WidgetRef ref) {

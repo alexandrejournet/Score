@@ -48,7 +48,7 @@ class UpdateService {
   static const _repo = 'Score';
   static const _apiUrl = 'https://api.github.com/repos/$_owner/$_repo/releases';
 
-  static Future<UpdateInfo?> checkForUpdate() async {
+  static Future<UpdateInfo?> checkForUpdate({String channel = 'stable'}) async {
     try {
       final packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = 'v${packageInfo.version}';
@@ -65,8 +65,17 @@ class UpdateService {
         throw Exception('GitHub API returned HTTP ${response.statusCode}');
       }
 
-      final releases = jsonDecode(response.body) as List;
+      var releases = jsonDecode(response.body) as List;
       if (releases.isEmpty) throw Exception('No releases found');
+
+      // Filter out prereleases for stable channel
+      if (channel == 'stable') {
+        releases = releases.where((r) =>
+            !((r as Map<String, dynamic>)['prerelease'] as bool)
+        ).toList();
+      }
+
+      if (releases.isEmpty) return null;
 
       releases.sort((a, b) {
         final tagA = (a as Map<String, dynamic>)['tag_name'] as String;

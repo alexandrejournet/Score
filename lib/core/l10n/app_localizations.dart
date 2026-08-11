@@ -142,6 +142,7 @@ class AppLocalizations {
   String get skip => _t('Skip', 'Passer');
   String get next => _t('Next', 'Suivant');
   String get getStarted => _t('Get started', 'Commencer');
+  String get updateChannel => _t('Update channel', 'Canal de mise à jour');
 
   String playerRange(int min, int max) {
     final range = '$min-$max';

@@ -13,6 +13,7 @@ class PersistenceService {
   static const _gamePlayedKey = 'game_played';
   static const _themeKey = 'theme_mode';
   static const _hapticKey = 'haptic_feedback_enabled';
+  static const _channelKey = 'update_channel';
   static const _myGameIdsKey = 'my_game_ids';
 
   static SharedPreferences? _prefs;
@@ -37,6 +38,14 @@ class PersistenceService {
 
   static Future<void> saveHapticEnabled(bool enabled) async {
     await _prefs?.setBool(_hapticKey, enabled);
+  }
+
+  static String loadUpdateChannel() {
+    return _prefs?.getString(_channelKey) ?? 'stable';
+  }
+
+  static Future<void> saveUpdateChannel(String channel) async {
+    await _prefs?.setString(_channelKey, channel);
   }
 
   static List<Game> loadCustomGames() {
