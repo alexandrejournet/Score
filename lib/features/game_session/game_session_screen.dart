@@ -10,6 +10,7 @@ import '../../../core/models/game_played.dart';
 import '../../../core/models/game.dart';
 import '../../../core/models/player.dart';
 import '../../../core/providers/app_providers.dart';
+import '../../../core/ui/haptic_util.dart';
 import '../../../core/ui/pulse_score.dart';
 import 'category_game_screen.dart';
 import 'skyjo_game_screen.dart';
@@ -45,6 +46,8 @@ Future<void> _showScoreDialog(
   repo.update(gamePlayedId, gp.copyWith(scores: newScores, history: [...gp.history, entry]));
   ref.invalidate(activeGamesProvider);
   bumpGameVersion(ref);
+
+  hapticLight(ref);
 
   _checkEndGameForScores(ref, gamePlayedId, gp, newScores);
 
@@ -844,6 +847,8 @@ class _MultiSelectBarState extends State<_MultiSelectBar> {
     repo.update(widget.gamePlayedId, gp.copyWith(scores: newScores, history: [...gp.history, entry]));
     widget.ref.invalidate(activeGamesProvider);
     bumpGameVersion(widget.ref);
+
+    hapticLight(widget.ref);
 
     _checkEndGameForScores(widget.ref, widget.gamePlayedId, gp, newScores);
 

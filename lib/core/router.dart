@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'models/game.dart';
 import '../features/splash/splash_screen.dart';
+import '../features/splash/onboarding_screen.dart';
 import '../features/game_detail/game_detail_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/new_game/new_game_screen.dart';
@@ -22,6 +23,16 @@ final router = GoRouter(
       name: 'splash',
       builder: (context, state) => const SplashScreen(),
     ),
+    GoRoute(
+      path: '/onboarding',
+      name: 'onboarding',
+      pageBuilder: (context, state) => CustomTransitionPage(
+        key: state.pageKey,
+        child: const OnboardingScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+            FadeTransition(opacity: animation, child: child),
+      ),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
           AppShell(navigationShell: navigationShell),
@@ -31,7 +42,12 @@ final router = GoRouter(
             GoRoute(
               path: '/dashboard',
               name: 'dashboard',
-              builder: (context, state) => const HomeScreen(),
+              pageBuilder: (context, state) => CustomTransitionPage(
+                key: state.pageKey,
+                child: const HomeScreen(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+                    FadeTransition(opacity: animation, child: child),
+              ),
             ),
           ],
         ),
@@ -40,7 +56,12 @@ final router = GoRouter(
             GoRoute(
               path: '/games',
               name: 'games',
-              builder: (context, state) => const GamesScreen(),
+              pageBuilder: (context, state) => CustomTransitionPage(
+                key: state.pageKey,
+                child: const GamesScreen(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+                    FadeTransition(opacity: animation, child: child),
+              ),
             ),
           ],
         ),
@@ -49,7 +70,12 @@ final router = GoRouter(
             GoRoute(
               path: '/players',
               name: 'players',
-              builder: (context, state) => const PlayersScreen(),
+              pageBuilder: (context, state) => CustomTransitionPage(
+                key: state.pageKey,
+                child: const PlayersScreen(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+                    FadeTransition(opacity: animation, child: child),
+              ),
             ),
           ],
         ),
@@ -58,7 +84,12 @@ final router = GoRouter(
             GoRoute(
               path: '/settings',
               name: 'settings',
-              builder: (context, state) => const SettingsScreen(),
+              pageBuilder: (context, state) => CustomTransitionPage(
+                key: state.pageKey,
+                child: const SettingsScreen(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+                    FadeTransition(opacity: animation, child: child),
+              ),
               routes: [
                 GoRoute(
                   path: 'groups',

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -71,7 +72,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     _fadeController.forward();
     await Future.delayed(const Duration(milliseconds: 500));
     if (mounted) {
-      context.go('/dashboard');
+      final onboardingDone = await OnboardingScreen.isDone();
+      if (mounted) {
+        context.go(onboardingDone ? '/dashboard' : '/onboarding');
+      }
     }
   }
 

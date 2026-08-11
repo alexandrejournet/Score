@@ -12,6 +12,7 @@ class PersistenceService {
   static const _groupsKey = 'groups';
   static const _gamePlayedKey = 'game_played';
   static const _themeKey = 'theme_mode';
+  static const _hapticKey = 'haptic_feedback_enabled';
   static const _myGameIdsKey = 'my_game_ids';
 
   static SharedPreferences? _prefs;
@@ -28,6 +29,14 @@ class PersistenceService {
 
   static Future<void> saveThemeMode(ThemeMode mode) async {
     await _prefs?.setString(_themeKey, mode.name);
+  }
+
+  static bool loadHapticEnabled() {
+    return _prefs?.getBool(_hapticKey) ?? true;
+  }
+
+  static Future<void> saveHapticEnabled(bool enabled) async {
+    await _prefs?.setBool(_hapticKey, enabled);
   }
 
   static List<Game> loadCustomGames() {

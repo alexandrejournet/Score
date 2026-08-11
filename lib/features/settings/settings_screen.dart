@@ -24,6 +24,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final l10n = AppLocalizations.of(context);
     final groups = ref.watch(allGroupsProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final hapticEnabled = ref.watch(hapticEnabledProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings)),
@@ -49,6 +50,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               final mode = value ? ThemeMode.dark : ThemeMode.light;
               ref.read(themeModeProvider.notifier).state = mode;
               saveTheme(ref, mode);
+            },
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.vibration),
+            title: Text(l10n.hapticFeedback),
+            value: hapticEnabled,
+            onChanged: (value) {
+              ref.read(hapticEnabledProvider.notifier).state = value;
+              PersistenceService.saveHapticEnabled(value);
             },
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           ),

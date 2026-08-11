@@ -132,6 +132,16 @@ class AppLocalizations {
   String get confirmDeleteHistory => _t('Delete this entry?', 'Supprimer cette entrée ?');
   String get confirmDeleteHistoryMsg => _t('This history entry will be permanently removed.', 'Cette entrée d\'historique sera définitivement supprimée.');
   String get delete => _t('Delete', 'Supprimer');
+  String get hapticFeedback => _t('Vibrations', 'Vibrations');
+  String get onboardingTitle1 => _t('Welcome to Score!', 'Bienvenue sur Score !');
+  String get onboardingDesc1 => _t('Track scores for all your favorite board games.', 'Suivez les scores de tous vos jeux de société préférés.');
+  String get onboardingTitle2 => _t('Add players', 'Ajoutez des joueurs');
+  String get onboardingDesc2 => _t('Create players and groups to quickly start a game.', 'Créez des joueurs et des groupes pour lancer une partie rapidement.');
+  String get onboardingTitle3 => _t('Start playing!', 'À vous de jouer !');
+  String get onboardingDesc3 => _t('Pick a game, select players, and start scoring.', 'Choisissez un jeu, sélectionnez des joueurs, et commencez à scorer.');
+  String get skip => _t('Skip', 'Passer');
+  String get next => _t('Next', 'Suivant');
+  String get getStarted => _t('Get started', 'Commencer');
 
   String playerRange(int min, int max) {
     final range = '$min-$max';
