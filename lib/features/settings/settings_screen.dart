@@ -105,7 +105,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${l10n.upToDate} (${updateInfo?.currentVersion ?? "?"} / ${updateInfo?.latestVersion ?? "?"})'),
+              content: Text('${l10n.upToDate} (${updateInfo?.latestVersion ?? "?"})'),
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
