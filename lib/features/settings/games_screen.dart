@@ -151,7 +151,7 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
   }
 
   Widget _buildRemoteTab(AppLocalizations l10n) {
-    final customIds = ref.watch(allGamesProvider).where((g) => g.isCustom).map((g) => g.id).toSet();
+    final myGameIds = ref.watch(myGamesProvider).map((g) => g.id).toSet();
 
     if (_loadingRemote) {
       return const Center(child: CircularProgressIndicator());
@@ -180,7 +180,7 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
       itemCount: filtered.length,
       itemBuilder: (context, index) => _RemoteGameTile(
         remoteGame: filtered[index],
-        alreadyAdded: (game) => customIds.contains(game.id) || ref.read(myGamesProvider).any((g) => g.id == game.id),
+        alreadyAdded: (game) => myGameIds.contains(game.id),
         onAdd: (game) {
           final existingIds = ref.read(allGamesProvider).where((g) => g.isCustom).map((g) => g.id).toSet();
           String newId = game.id;

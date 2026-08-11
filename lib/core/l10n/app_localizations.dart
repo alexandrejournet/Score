@@ -114,7 +114,7 @@ class AppLocalizations {
   String get upToDate => _t('You are up to date!', 'Vous êtes à jour !');
   String get updateCheckFailed => _t('Could not check for updates', 'Impossible de vérifier les mises à jour');
   String get createGame => _t('Create a game', 'Créer un jeu');
-  String get remote => _t('Remote', 'Remote');
+  String get remote => _t('Game bank', 'Banque de jeux');
   String get noRemoteGames => _t('No remote games found', 'Aucun jeu distant trouvé');
   String get scoreTypeLabel => _t('Score type', 'Type de score');
   String get points => _t('Points', 'Points');
