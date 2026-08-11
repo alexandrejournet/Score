@@ -850,7 +850,7 @@ class _MultiSelectBarState extends State<_MultiSelectBar> {
                 SizedBox(
                   width: 48,
                   child: IconButton(
-                    onPressed: _value != 0 ? () => _applyToAll(-_value) : null,
+                    onPressed: _value != 0 ? () => _applyToAll(-_value.abs()) : null,
                     icon: const Icon(Icons.remove_circle, size: 32),
                     color: AppColors.errorMuted,
                     padding: EdgeInsets.zero,
@@ -859,7 +859,7 @@ class _MultiSelectBarState extends State<_MultiSelectBar> {
                 SizedBox(
                   width: 48,
                   child: IconButton(
-                    onPressed: _value != 0 ? () => _applyToAll(_value) : null,
+                    onPressed: _value != 0 ? () => _applyToAll(_value.abs()) : null,
                     icon: const Icon(Icons.add_circle, size: 32),
                     color: AppColors.secondary,
                     padding: EdgeInsets.zero,
