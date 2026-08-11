@@ -7,6 +7,7 @@ import '../../../core/providers/app_providers.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/services/remote_games_service.dart';
 import '../../../core/models/game.dart';
+import '../../../core/ui/confirm_dialog.dart';
 
 class GamesScreen extends ConsumerStatefulWidget {
   const GamesScreen({super.key});
@@ -140,7 +141,16 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
                   )
                 : IconButton(
                     icon: const Icon(Icons.delete_outline, size: 20),
-                    onPressed: () => deleteGame(ref, game.id),
+                    onPressed: () async {
+                      final confirmed = await showConfirmDialog(
+                        context,
+                        title: l10n.confirmDeleteGame,
+                        message: l10n.confirmDeleteGameMsg,
+                        confirmLabel: l10n.delete,
+                        cancelLabel: l10n.cancel,
+                      );
+                      if (confirmed) deleteGame(ref, game.id);
+                    },
                   ),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             onTap: () => context.pushNamed('game-detail', extra: game),

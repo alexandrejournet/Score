@@ -6,6 +6,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../core/models/player.dart';
+import '../../../core/ui/confirm_dialog.dart';
 
 const _uuid = Uuid();
 
@@ -30,6 +31,7 @@ class _PlayersScreenState extends ConsumerState<PlayersScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final players = ref.watch(allPlayersProvider);
+    final sortedPlayers = [...players]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.players)),
@@ -68,7 +70,7 @@ class _PlayersScreenState extends ConsumerState<PlayersScreen> {
             ),
           ),
           Expanded(
-            child: players.isEmpty
+            child: sortedPlayers.isEmpty
                 ? Center(
                     child: Text(
                       l10n.playersCount(0),
@@ -81,9 +83,9 @@ class _PlayersScreenState extends ConsumerState<PlayersScreen> {
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.marginMobile,
                     ),
-                    itemCount: players.length,
+                    itemCount: sortedPlayers.length,
                     itemBuilder: (context, index) {
-                      final player = players[index];
+                      final player = sortedPlayers[index];
                       return Card(
                         margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                         child: ListTile(
@@ -102,7 +104,16 @@ class _PlayersScreenState extends ConsumerState<PlayersScreen> {
                           title: Text(player.name),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete_outline, size: 20),
-                            onPressed: () => deletePlayer(ref, player.id),
+                            onPressed: () async {
+                              final confirmed = await showConfirmDialog(
+                                context,
+                                title: l10n.confirmDeletePlayer,
+                                message: l10n.confirmDeletePlayerMsg,
+                                confirmLabel: l10n.delete,
+                                cancelLabel: l10n.cancel,
+                              );
+                              if (confirmed) deletePlayer(ref, player.id);
+                            },
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(24),

@@ -123,6 +123,15 @@ class AppLocalizations {
   String get maxPlayers => _t('Max', 'Max');
   String get colorLabel => _t('Color', 'Couleur');
   String get icon => _t('Icon', 'Icône');
+  String get confirmDeletePlayer => _t('Delete this player?', 'Supprimer ce joueur ?');
+  String get confirmDeletePlayerMsg => _t('This action cannot be undone. All their scores and history will be lost.', 'Cette action est irréversible. Tous ses scores et son historique seront perdus.');
+  String get confirmDeleteGroup => _t('Delete this group?', 'Supprimer ce groupe ?');
+  String get confirmDeleteGroupMsg => _t('The group will be deleted but players will be kept.', 'Le groupe sera supprimé mais les joueurs seront conservés.');
+  String get confirmDeleteGame => _t('Delete this game?', 'Supprimer ce jeu ?');
+  String get confirmDeleteGameMsg => _t('The custom game will be permanently removed.', 'Le jeu personnalisé sera définitivement supprimé.');
+  String get confirmDeleteHistory => _t('Delete this entry?', 'Supprimer cette entrée ?');
+  String get confirmDeleteHistoryMsg => _t('This history entry will be permanently removed.', 'Cette entrée d\'historique sera définitivement supprimée.');
+  String get delete => _t('Delete', 'Supprimer');
 
   String playerRange(int min, int max) {
     final range = '$min-$max';

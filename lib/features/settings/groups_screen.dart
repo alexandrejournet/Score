@@ -6,6 +6,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../core/models/group.dart';
+import '../../../core/ui/confirm_dialog.dart';
 
 const _uuid = Uuid();
 
@@ -122,7 +123,16 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
                           ),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete_outline, size: 20),
-                            onPressed: () => deleteGroup(ref, group.id),
+                            onPressed: () async {
+                              final confirmed = await showConfirmDialog(
+                                context,
+                                title: l10n.confirmDeleteGroup,
+                                message: l10n.confirmDeleteGroupMsg,
+                                confirmLabel: l10n.delete,
+                                cancelLabel: l10n.cancel,
+                              );
+                              if (confirmed) deleteGroup(ref, group.id);
+                            },
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(24),

@@ -35,6 +35,7 @@ class _NewGameScreenState extends ConsumerState<NewGameScreen> {
     final l10n = AppLocalizations.of(context);
     final games = ref.watch(myGamesProvider);
     final players = ref.watch(allPlayersProvider);
+    final sortedPlayers = [...players]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     final groups = ref.watch(allGroupsProvider);
     final selectedGame = games.where((g) => g.id == _selectedGameId).firstOrNull;
 
@@ -165,7 +166,7 @@ class _NewGameScreenState extends ConsumerState<NewGameScreen> {
             Wrap(
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.sm,
-              children: players.map((player) {
+              children: sortedPlayers.map((player) {
                 final isSelected = _selectedPlayerIds.contains(player.id);
                 final isFull = _selectedPlayerIds.length >= selectedGame.maxPlayers && !isSelected;
                 return FilterChip(

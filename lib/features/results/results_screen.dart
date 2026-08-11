@@ -9,6 +9,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/models/player.dart';
 import '../../../core/models/game.dart';
 import '../../../core/providers/app_providers.dart';
+import '../../../core/ui/confirm_dialog.dart';
 
 class ResultsScreen extends ConsumerWidget {
   final String gamePlayedId;
@@ -58,9 +59,18 @@ class ResultsScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_outline),
-            onPressed: () {
-              removeHistoryEntry(ref, gamePlayedId);
-              context.pop();
+            onPressed: () async {
+              final confirmed = await showConfirmDialog(
+                context,
+                title: l10n.confirmDeleteHistory,
+                message: l10n.confirmDeleteHistoryMsg,
+                confirmLabel: l10n.delete,
+                cancelLabel: l10n.cancel,
+              );
+              if (confirmed) {
+                removeHistoryEntry(ref, gamePlayedId);
+                if (context.canPop()) context.pop();
+              }
             },
           ),
         ],
