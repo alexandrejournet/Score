@@ -182,7 +182,11 @@ class ResultsScreen extends ConsumerWidget {
                 child: SizedBox(
                   height: 56,
                   child: ElevatedButton.icon(
-                    onPressed: () => context.pushNamed('new-game'),
+                    onPressed: () {
+                      final newId = startGame(ref, gamePlayed.gameId, gamePlayed.playerIds, advancedScoring: gamePlayed.advancedScoringEnabled);
+                      context.go('/dashboard');
+                      context.pushNamed('game-session', extra: newId);
+                    },
                     icon: const Icon(Icons.replay),
                     label: Text(l10n.replay),
                   ),
