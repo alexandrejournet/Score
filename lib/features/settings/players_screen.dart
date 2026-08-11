@@ -184,22 +184,44 @@ class _PlayersScreenState extends ConsumerState<PlayersScreen> {
               const SizedBox(height: 16),
               const Text('Couleur', style: TextStyle(fontSize: 12)),
               const SizedBox(height: 8),
+              // Color preview bar
+              Container(
+                height: 48,
+                decoration: BoxDecoration(
+                  color: selectedColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.outlineVariant, width: 1),
+                ),
+                child: Center(
+                  child: Text(
+                    '#${selectedColor.value.toRadixString(16).substring(2).toUpperCase()}',
+                    style: TextStyle(
+                      color: selectedColor.computeLuminance() > 0.5 ? Colors.black : Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Color grid
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: 10,
+                runSpacing: 10,
                 children: AppColors.playerColors.map((c) => GestureDetector(
                   onTap: () => setDialogState(() => selectedColor = c),
-                  child: Container(
-                    width: 40, height: 40,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    width: 44, height: 44,
                     decoration: BoxDecoration(
                       color: c,
                       shape: BoxShape.circle,
-                      border: selectedColor == c
-                          ? Border.all(color: AppColors.onSurface, width: 3)
-                          : Border.all(color: c.withValues(alpha: 0.3), width: 1),
+                      boxShadow: selectedColor == c
+                          ? [BoxShadow(color: c.withValues(alpha: 0.5), blurRadius: 8, spreadRadius: 1)]
+                          : [],
                     ),
                     child: selectedColor == c
-                        ? const Icon(Icons.check, color: Colors.white, size: 20)
+                        ? const Icon(Icons.check, color: Colors.white, size: 22)
                         : null,
                   ),
                 )).toList(),
