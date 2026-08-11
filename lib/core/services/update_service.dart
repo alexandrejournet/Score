@@ -38,7 +38,7 @@ int _compareVersions(String a, String b) {
 List<Comparable<Object>> _parseVersion(String s) {
   final stripped = s.startsWith('v') ? s.substring(1) : s;
   return stripped
-      .split(RegExp(r'[-.]'))
+      .split(RegExp(r'[-.+]'))
       .map((p) => int.tryParse(p) ?? (p.codeUnits.fold<int>(0, (acc, b) => acc + b) as Comparable<Object>))
       .toList();
 }
