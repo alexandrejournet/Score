@@ -55,6 +55,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: AppSpacing.lg),
           _SectionTitle(title: l10n.data),
           _SettingsTile(
+            icon: Icons.add_circle_outline,
+            title: l10n.createGame,
+            onTap: () => context.pushNamed('create-game'),
+          ),
+          _SettingsTile(
             icon: Icons.group_work_outlined,
             title: l10n.groups,
             subtitle: l10n.groupsCount(groups.length),

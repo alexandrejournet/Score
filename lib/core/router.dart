@@ -11,6 +11,7 @@ import '../features/settings/players_screen.dart';
 import '../features/settings/games_screen.dart';
 import '../features/settings/groups_screen.dart';
 import '../features/settings/statistics_screen.dart';
+import '../features/settings/create_game_screen.dart';
 import 'shell.dart';
 
 final router = GoRouter(
@@ -68,6 +69,11 @@ final router = GoRouter(
                   path: 'statistics',
                   name: 'statistics',
                   builder: (context, state) => const StatisticsScreen(),
+                ),
+                GoRoute(
+                  path: 'create-game',
+                  name: 'create-game',
+                  builder: (context, state) => const CreateGameScreen(),
                 ),
               ],
             ),
