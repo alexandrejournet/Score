@@ -58,16 +58,20 @@ class UpdateService {
         headers: {'Accept': 'application/vnd.github.v3+json'},
       );
 
-      if (response.statusCode != 200) return null;
+      if (response.statusCode == 403) {
+        throw Exception('GitHub rate limited (HTTP 403)');
+      }
+      if (response.statusCode != 200) {
+        throw Exception('GitHub API returned HTTP ${response.statusCode}');
+      }
 
       final releases = jsonDecode(response.body) as List;
-      if (releases.isEmpty) return null;
+      if (releases.isEmpty) throw Exception('No releases found');
 
-      // Sort by version number, not creation date (GitHub API sorts by created_at)
       releases.sort((a, b) {
         final tagA = (a as Map<String, dynamic>)['tag_name'] as String;
         final tagB = (b as Map<String, dynamic>)['tag_name'] as String;
-        return _compareVersions(tagB, tagA); // descending
+        return _compareVersions(tagB, tagA);
       });
 
       final latest = releases.first as Map<String, dynamic>;
@@ -75,7 +79,15 @@ class UpdateService {
       final isPrerelease = latest['prerelease'] as bool;
       final releaseNotes = latest['body'] as String? ?? '';
 
-      if (_compareVersions(latestTag, currentVersion) <= 0) return null;
+      if (_compareVersions(latestTag, currentVersion) <= 0) {
+        return UpdateInfo(
+          latestVersion: latestTag,
+          currentVersion: currentVersion,
+          downloadUrl: '',
+          releaseNotes: '',
+          isPrerelease: false,
+        );
+      }
 
       String? apkUrl;
       final assets = latest['assets'] as List? ?? [];
@@ -94,8 +106,8 @@ class UpdateService {
         releaseNotes: releaseNotes,
         isPrerelease: isPrerelease,
       );
-    } catch (_) {
-      return null;
+    } catch (e) {
+      rethrow;
     }
   }
 
