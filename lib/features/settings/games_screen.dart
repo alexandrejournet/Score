@@ -180,7 +180,10 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
       itemCount: filtered.length,
       itemBuilder: (context, index) => _RemoteGameTile(
         remoteGame: filtered[index],
-        alreadyAdded: (game) => myGameIds.contains(game.id),
+        alreadyAdded: (game) {
+          final baseId = game.id;
+          return myGameIds.contains(baseId) || myGameIds.any((id) => id.startsWith('$baseId-'));
+        },
         onAdd: (game) {
           final existingIds = ref.read(allGamesProvider).where((g) => g.isCustom).map((g) => g.id).toSet();
           String newId = game.id;
