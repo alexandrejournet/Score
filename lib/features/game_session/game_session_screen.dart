@@ -51,40 +51,6 @@ Future<void> _showScoreDialog(
   hapticLight(ref);
 
   _checkEndGameForScores(ref, gamePlayedId, gp, newScores);
-
-  _showUndoSnackBarTopLevel(ref, gamePlayedId, context);
-}
-
-void _showUndoSnackBarTopLevel(WidgetRef ref, String gamePlayedId, BuildContext context) {
-  final l10n = AppLocalizations.of(context);
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(l10n.undoLast),
-      action: SnackBarAction(
-        label: l10n.undoLast,
-        onPressed: () {
-          final repo = ref.read(gamePlayedRepositoryProvider);
-          final current = repo.getById(gamePlayedId);
-          if (current == null || current.history.isEmpty) return;
-          final restoredScores = current.history.length > 1
-              ? current.history[current.history.length - 2].scores
-              : <String, int>{};
-          repo.update(
-            gamePlayedId,
-            current.copyWith(
-              history: current.history.sublist(0, current.history.length - 1),
-              scores: restoredScores,
-            ),
-          );
-          ref.invalidate(activeGamesProvider);
-          bumpGameVersion(ref);
-        },
-      ),
-      duration: const Duration(seconds: 4),
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    ),
-  );
 }
 
 void _checkEndGameForScores(WidgetRef ref, String gamePlayedId, GamePlayed gp, Map<String, int> newScores) {
@@ -865,41 +831,7 @@ class _MultiSelectBarState extends State<_MultiSelectBar> {
 
     _checkEndGameForScores(widget.ref, widget.gamePlayedId, gp, newScores);
 
-    _showUndoSnackBar(widget.ref, widget.gamePlayedId, gp);
-
     widget.onApplied();
-  }
-
-  void _showUndoSnackBar(WidgetRef ref, String id, GamePlayed gp) {
-    final l10n = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.undoLast),
-        action: SnackBarAction(
-          label: l10n.undoLast,
-          onPressed: () {
-            final repo = ref.read(gamePlayedRepositoryProvider);
-            final current = repo.getById(id);
-            if (current == null || current.history.isEmpty) return;
-            final restoredScores = current.history.length > 1
-                ? current.history[current.history.length - 2].scores
-                : <String, int>{};
-            repo.update(
-              id,
-              current.copyWith(
-                history: current.history.sublist(0, current.history.length - 1),
-                scores: restoredScores,
-              ),
-            );
-            ref.invalidate(activeGamesProvider);
-            bumpGameVersion(ref);
-          },
-        ),
-        duration: const Duration(seconds: 4),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-    );
   }
 
   @override
