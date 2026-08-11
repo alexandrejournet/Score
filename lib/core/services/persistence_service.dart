@@ -79,7 +79,15 @@ class PersistenceService {
     if (json == null || json.isEmpty) return [];
     try {
       final list = jsonDecode(json) as List;
-      return list.map((e) => fromJson(e as Map<String, dynamic>)).toList();
+      final results = <T>[];
+      for (final e in list) {
+        try {
+          results.add(fromJson(e as Map<String, dynamic>));
+        } catch (_) {
+          // Skip corrupted entries
+        }
+      }
+      return results;
     } catch (_) {
       return [];
     }

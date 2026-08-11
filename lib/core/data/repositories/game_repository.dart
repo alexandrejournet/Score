@@ -140,7 +140,18 @@ class GameRepository {
   }
 
   void addCustom(Game game) {
-    _customGames.add(game);
+    final existingIds = all.map((g) => g.id).toSet();
+    if (existingIds.contains(game.id)) {
+      int counter = 1;
+      String newId;
+      do {
+        newId = '${game.id}-$counter';
+        counter++;
+      } while (existingIds.contains(newId));
+      _customGames.add(game.copyWith(id: newId));
+    } else {
+      _customGames.add(game);
+    }
   }
 
   void update(String id, Game updated) {
@@ -158,6 +169,7 @@ class GameRepository {
   void remove(String id) {
     _games.removeWhere((g) => g.id == id);
     _customGames.removeWhere((g) => g.id == id);
+    _myGameIds.remove(id);
   }
 
   void toggleFavorite(String id) {
