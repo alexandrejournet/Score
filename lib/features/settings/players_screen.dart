@@ -92,9 +92,9 @@ class _PlayersScreenState extends ConsumerState<PlayersScreen> {
                           leading: CircleAvatar(
                             backgroundColor: player.color.withValues(alpha: 0.2),
                             child: Text(
-                              player.name.isNotEmpty
+                              player.avatar ?? (player.name.isNotEmpty
                                   ? player.name[0].toUpperCase()
-                                  : '?',
+                                  : '?'),
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 color: player.color,
@@ -118,6 +118,7 @@ class _PlayersScreenState extends ConsumerState<PlayersScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(24),
                           ),
+                          onTap: () => _showEditPlayerDialog(context, ref, player),
                         ),
                       );
                     },
@@ -141,5 +142,86 @@ class _PlayersScreenState extends ConsumerState<PlayersScreen> {
     _nameController.clear();
     _selectedColor = AppColors.playerColors[
         (ref.read(allPlayersProvider).length) % AppColors.playerColors.length];
+  }
+
+  void _showEditPlayerDialog(BuildContext context, WidgetRef ref, Player player) {
+    final nameCtrl = TextEditingController(text: player.name);
+    Color selectedColor = player.color;
+    String avatar = player.avatar ?? '';
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: const Text('Modifier le joueur'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameCtrl,
+                decoration: const InputDecoration(labelText: 'Nom'),
+              ),
+              const SizedBox(height: 16),
+              const Text('Avatar (emoji)', style: TextStyle(fontSize: 12)),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: ['🧑','👩','🧔','👶','👴','👵','🦸','🧙','🐱','🐶','🦊','🐸'].map((e) => GestureDetector(
+                  onTap: () => setDialogState(() => avatar = avatar == e ? '' : e),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 2),
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: avatar == e ? selectedColor.withValues(alpha: 0.2) : Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(e, style: const TextStyle(fontSize: 20)),
+                  ),
+                )).toList(),
+              ),
+              const SizedBox(height: 16),
+              const Text('Couleur', style: TextStyle(fontSize: 12)),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: AppColors.playerColors.map((c) => GestureDetector(
+                  onTap: () => setDialogState(() => selectedColor = c),
+                  child: Container(
+                    width: 32, height: 32,
+                    decoration: BoxDecoration(
+                      color: c,
+                      shape: BoxShape.circle,
+                      border: selectedColor == c
+                          ? Border.all(color: AppColors.onSurface, width: 3)
+                          : null,
+                    ),
+                  ),
+                )).toList(),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Annuler'),
+            ),
+            FilledButton(
+              onPressed: () {
+                final name = nameCtrl.text.trim();
+                if (name.isEmpty) return;
+                updatePlayer(ref, player.id, player.copyWith(
+                  name: name,
+                  color: selectedColor,
+                  avatar: avatar.isEmpty ? null : avatar,
+                ));
+                Navigator.of(ctx).pop();
+              },
+              child: const Text('Enregistrer'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

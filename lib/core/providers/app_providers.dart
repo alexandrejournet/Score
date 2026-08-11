@@ -108,6 +108,13 @@ void addPlayer(WidgetRef ref, Player player) {
   _saveData(ref);
 }
 
+void updatePlayer(WidgetRef ref, String id, Player updated) {
+  ref.read(playerRepositoryProvider).update(id, updated);
+  ref.invalidate(allPlayersProvider);
+  bumpGameVersion(ref);
+  _saveData(ref);
+}
+
 void addGroup(WidgetRef ref, Group group) {
   ref.read(groupRepositoryProvider).add(group);
   ref.invalidate(allGroupsProvider);
