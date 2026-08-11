@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uuid/uuid.dart';
-import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
@@ -554,7 +553,7 @@ void _showHistory(BuildContext context, WidgetRef ref, String gamePlayedId, Game
                                                 .withValues(alpha: 0.2),
                                             child: Text(
                                               player?.name.isNotEmpty == true
-                                                  ? (player!.avatar ?? player!.name[0].toUpperCase())
+                                                  ? (player?.avatar ?? player?.name.isNotEmpty == true ? player!.name[0].toUpperCase() : '?')
                                                   : '?',
                                               style: TextStyle(
                                                   fontSize: 8,
