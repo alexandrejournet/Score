@@ -44,8 +44,11 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(AppSpacing.marginMobile, AppSpacing.sm,
                 AppSpacing.marginMobile, 0),
-            child: Text(l10n.gamesSubtitle,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.outline)),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(l10n.gamesSubtitle,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.outline)),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(AppSpacing.marginMobile, AppSpacing.sm,
