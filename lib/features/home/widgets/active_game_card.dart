@@ -31,7 +31,8 @@ class ActiveGameCard extends ConsumerWidget {
     gamePlayers.sort((a, b) {
       final scoreB = gamePlayed.scores[b.id] ?? 0;
       final scoreA = gamePlayed.scores[a.id] ?? 0;
-      return scoreB.compareTo(scoreA);
+      final cmp = scoreB.compareTo(scoreA);
+      return game?.lowerScoreWins == true ? -cmp : cmp;
     });
 
     final leader = gamePlayers.isNotEmpty ? gamePlayers.first : null;
