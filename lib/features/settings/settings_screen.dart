@@ -173,15 +173,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 }
 
-class _VersionSubtitle extends StatelessWidget {
+class _VersionSubtitle extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final channel = ref.watch(updateChannelProvider);
     return FutureBuilder<PackageInfo>(
       future: PackageInfo.fromPlatform(),
       builder: (context, snapshot) {
         final version = snapshot.data?.version ?? '...';
         final build = snapshot.data?.buildNumber ?? '';
-        return Text('SCORE v$version+$build',
+        return Text('SCORE v$version+$build (${channel == 'alpha' ? 'alpha' : 'stable'})',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.outline));
       },
     );
