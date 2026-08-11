@@ -1,5 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -33,6 +35,8 @@ class _CategoryGameScreenState extends ConsumerState<CategoryGameScreen> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    WakelockPlus.enable();
     _initFromState();
   }
 
@@ -73,6 +77,8 @@ class _CategoryGameScreenState extends ConsumerState<CategoryGameScreen> {
 
   @override
   void dispose() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    WakelockPlus.disable();
     for (final m in _countControllers.values) {
       for (final c in m.values) {
         c.dispose();

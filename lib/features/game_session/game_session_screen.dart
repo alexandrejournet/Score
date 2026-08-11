@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter/services.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -606,6 +608,18 @@ class GameSessionScreen extends ConsumerStatefulWidget {
 class _GameSessionScreenState extends ConsumerState<GameSessionScreen> {
   final Set<String> _selectedPlayerIds = {};
   bool _multiSelectMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WakelockPlus.enable();
+  }
+
+  @override
+  void dispose() {
+    WakelockPlus.disable();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
