@@ -105,19 +105,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(l10n.upToDate),
+              content: Text('${l10n.upToDate} (${updateInfo?.currentVersion ?? "?"} / ${updateInfo?.latestVersion ?? "?"})'),
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
           );
         }
       }
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n.updateCheckFailed),
+            content: Text('${l10n.updateCheckFailed}: $e'),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
