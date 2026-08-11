@@ -7,6 +7,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/services/update_service.dart';
+import '../../../core/services/persistence_service.dart';
 import '../../../core/ui/update_dialog.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {

@@ -8,14 +8,6 @@ import '../../../core/l10n/app_localizations.dart';
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
-  @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
-}
-
-class _OnboardingScreenState extends State<OnboardingScreen> {
-  final _pageController = PageController();
-  int _currentPage = 0;
-
   static const _onboardingKey = 'onboarding_done';
 
   static Future<bool> isDone() async {
@@ -27,6 +19,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_onboardingKey, true);
   }
+
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  final _pageController = PageController();
+  int _currentPage = 0;
 
   @override
   void dispose() {
