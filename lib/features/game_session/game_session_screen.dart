@@ -10,6 +10,7 @@ import '../../../core/models/game_played.dart';
 import '../../../core/models/game.dart';
 import '../../../core/models/player.dart';
 import '../../../core/providers/app_providers.dart';
+import '../../../core/ui/pulse_score.dart';
 import 'category_game_screen.dart';
 import 'skyjo_game_screen.dart';
 
@@ -743,10 +744,11 @@ class _GameSessionScreenState extends ConsumerState<GameSessionScreen> {
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(color: AppColors.outlineVariant, width: 1),
                                   ),
-                                  child: Text('$score',
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.bricolageGrotesque(
-                                          fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.onSurface)),
+                                  child: PulseScore(
+                                      value: score,
+                                      fontSize: 28,
+                                      color: AppColors.onSurface,
+                                  ),
                                 ),
                               ),
                             ),

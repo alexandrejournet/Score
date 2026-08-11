@@ -160,6 +160,113 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     List<GamePlayed> allActive,
   ) {
     final l10n = AppLocalizations.of(context);
+    final isWide = MediaQuery.of(context).size.width > 600;
+
+    if (isWide) {
+      return _buildWideView(context, l10n, displayedActive, filteredFinished, allActive);
+    }
+
+    return _buildNarrowView(context, l10n, displayedActive, filteredFinished, allActive);
+  }
+
+  Widget _buildWideView(
+    BuildContext context,
+    AppLocalizations l10n,
+    List<GamePlayed> displayedActive,
+    List<GamePlayed> filteredFinished,
+    List<GamePlayed> allActive,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const GameTabBar(),
+        const SizedBox(height: AppSpacing.sm),
+        Expanded(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _buildColumn(context, l10n, displayedActive, allActive, isActive: true),
+              ),
+              const VerticalDivider(width: 1),
+              Expanded(
+                child: _buildColumn(context, l10n, filteredFinished, allActive, isActive: false),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildColumn(
+    BuildContext context,
+    AppLocalizations l10n,
+    List<GamePlayed> items,
+    List<GamePlayed> allActive, {
+    required bool isActive,
+  }) {
+    if (isActive) {
+      return ListView(
+        padding: const EdgeInsets.only(bottom: 100),
+        children: [
+          if (items.isNotEmpty) ...[
+            _SectionHeader(
+              title: l10n.inProgress,
+              action: allActive.length > 2
+                  ? TextButton(
+                      onPressed: () => setState(() => _showAllInProgress = !_showAllInProgress),
+                      child: Text(_showAllInProgress ? l10n.viewLess : l10n.viewAll),
+                    )
+                  : null,
+            ),
+            ...items.map((gp) => ActiveGameCard(gamePlayed: gp)),
+          ] else
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.xl * 3),
+              child: Center(
+                child: Column(
+                  children: [
+                    const Icon(Icons.sports_esports_outlined, size: 48, color: AppColors.outlineVariant),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(l10n.noGames, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppColors.outline)),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      );
+    } else {
+      return items.isEmpty
+          ? Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.xl * 3),
+              child: Center(
+                child: Column(
+                  children: [
+                    const Icon(Icons.history, size: 48, color: AppColors.outlineVariant),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(l10n.noGames, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppColors.outline)),
+                  ],
+                ),
+              ),
+            )
+          : ListView(
+              padding: const EdgeInsets.only(bottom: 100),
+              children: [
+                _SectionHeader(title: l10n.recentHistory),
+                ...items.map((gp) => HistoryCard(gamePlayed: gp)),
+              ],
+            );
+    }
+  }
+
+  Widget _buildNarrowView(
+    BuildContext context,
+    AppLocalizations l10n,
+    List<GamePlayed> displayedActive,
+    List<GamePlayed> filteredFinished,
+    List<GamePlayed> allActive,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
