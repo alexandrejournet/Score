@@ -553,7 +553,7 @@ void _showHistory(BuildContext context, WidgetRef ref, String gamePlayedId, Game
                                                 .withValues(alpha: 0.2),
                                             child: Text(
                                               player?.name.isNotEmpty == true
-                                                  ? (player?.avatar ?? player?.name.isNotEmpty == true ? player!.name[0].toUpperCase() : '?')
+                                                  ? (player!.avatar ?? player.name[0].toUpperCase())
                                                   : '?',
                                               style: TextStyle(
                                                   fontSize: 8,
