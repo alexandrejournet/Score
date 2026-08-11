@@ -155,7 +155,8 @@ class _PlayersScreenState extends ConsumerState<PlayersScreen> {
         builder: (ctx, setDialogState) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           title: const Text('Modifier le joueur'),
-          content: Column(
+          content: SingleChildScrollView(
+            child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
@@ -165,18 +166,18 @@ class _PlayersScreenState extends ConsumerState<PlayersScreen> {
               const SizedBox(height: 16),
               const Text('Avatar (emoji)', style: TextStyle(fontSize: 12)),
               const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: ['🧑','👩','🧔','👶','👴','👵','🦸','🧙','🐱','🐶','🦊','🐸'].map((e) => GestureDetector(
+              Wrap(
+                spacing: 4,
+                runSpacing: 4,
+                children: ['🧑','👩','🧔','👶','👴','👵','🦸','🧙','🐱','🐶','🦊','🐸','🐻','🐼','🦁','🐯'].map((e) => GestureDetector(
                   onTap: () => setDialogState(() => avatar = avatar == e ? '' : e),
                   child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 2),
-                    padding: const EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       color: avatar == e ? selectedColor.withValues(alpha: 0.2) : Colors.transparent,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text(e, style: const TextStyle(fontSize: 20)),
+                    child: Text(e, style: const TextStyle(fontSize: 22)),
                   ),
                 )).toList(),
               ),
@@ -185,21 +186,26 @@ class _PlayersScreenState extends ConsumerState<PlayersScreen> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
+                runSpacing: 8,
                 children: AppColors.playerColors.map((c) => GestureDetector(
                   onTap: () => setDialogState(() => selectedColor = c),
                   child: Container(
-                    width: 32, height: 32,
+                    width: 40, height: 40,
                     decoration: BoxDecoration(
                       color: c,
                       shape: BoxShape.circle,
                       border: selectedColor == c
                           ? Border.all(color: AppColors.onSurface, width: 3)
-                          : null,
+                          : Border.all(color: c.withValues(alpha: 0.3), width: 1),
                     ),
+                    child: selectedColor == c
+                        ? const Icon(Icons.check, color: Colors.white, size: 20)
+                        : null,
                   ),
                 )).toList(),
               ),
             ],
+          ),
           ),
           actions: [
             TextButton(
