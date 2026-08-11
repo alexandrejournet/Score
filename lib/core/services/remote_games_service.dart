@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../models/game.dart';
+import '../models/game.dart';
 
 class RemoteGame {
   final String name;

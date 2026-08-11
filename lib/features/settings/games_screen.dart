@@ -149,7 +149,6 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
   }
 
   Widget _buildRemoteTab(AppLocalizations l10n) {
-    final myGameIds = ref.watch(myGamesProvider).map((g) => g.id).toSet();
     final customIds = ref.watch(allGamesProvider).where((g) => g.isCustom).map((g) => g.id).toSet();
 
     if (_loadingRemote) {
