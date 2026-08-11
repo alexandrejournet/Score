@@ -98,6 +98,8 @@ class _UpdateDialogState extends State<UpdateDialog> {
         _error = error;
         _downloading = false;
       }),
-    );
+    ).then((_) {
+      if (mounted) Navigator.of(context).pop();
+    });
   }
 }
