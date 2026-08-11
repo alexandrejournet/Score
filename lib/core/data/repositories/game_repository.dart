@@ -17,6 +17,7 @@ final defaultGames = [
     name: 'Mille Sabords',
     minPlayers: 2,
     maxPlayers: 6,
+    endScore: 8000,
     color: const Color(0xFF1A5276),
     icon: '🏴‍☠️',
     scoreType: ScoreType.points,

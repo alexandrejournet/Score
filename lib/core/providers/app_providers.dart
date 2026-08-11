@@ -172,6 +172,13 @@ void updateScore(WidgetRef ref, String gamePlayedId, String playerId, int delta)
   ref.invalidate(gamesByTabProvider);
   bumpGameVersion(ref);
   _saveData(ref);
+
+  final games = ref.read(allGamesProvider);
+  final g = games.where((g) => g.id == game.gameId).firstOrNull;
+  final endScore = g?.endScore;
+  if (endScore != null && newScores.values.any((s) => s >= endScore)) {
+    finishGame(ref, gamePlayedId);
+  }
 }
 
 void finishGame(WidgetRef ref, String gamePlayedId) {

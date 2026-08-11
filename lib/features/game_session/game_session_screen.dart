@@ -44,6 +44,20 @@ Future<void> _showScoreDialog(
   repo.update(gamePlayedId, gp.copyWith(scores: newScores, history: [...gp.history, entry]));
   ref.invalidate(activeGamesProvider);
   bumpGameVersion(ref);
+
+  _checkEndGameForScores(ref, gamePlayedId, gp, newScores);
+}
+
+void _checkEndGameForScores(WidgetRef ref, String gamePlayedId, GamePlayed gp, Map<String, int> newScores) {
+  final games = ref.read(allGamesProvider);
+  final game = games.where((g) => g.id == gp.gameId).firstOrNull;
+  final endScore = game?.endScore;
+  if (endScore == null) return;
+
+  final reached = newScores.values.any((s) => s >= endScore);
+  if (reached) {
+    finishGame(ref, gamePlayedId);
+  }
 }
 
 class _ScoreDialog extends StatefulWidget {
@@ -686,16 +700,7 @@ class _GameSessionScreenState extends ConsumerState<GameSessionScreen> {
                           if (!_multiSelectMode) ...[
                             const SizedBox(width: AppSpacing.md),
                             SizedBox(
-                              width: 48,
-                              child: IconButton(
-                                onPressed: () => updateScore(ref, widget.gamePlayedId, player.id, -1),
-                                icon: const Icon(Icons.remove_circle_outline),
-                                color: AppColors.outline,
-                                iconSize: 28,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 80,
+                              width: 120,
                               child: GestureDetector(
                                 onTap: () => _showScoreDialog(context, ref, widget.gamePlayedId, player),
                                 child: Container(
@@ -709,15 +714,6 @@ class _GameSessionScreenState extends ConsumerState<GameSessionScreen> {
                                       style: GoogleFonts.bricolageGrotesque(
                                           fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.onSurface)),
                                 ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 48,
-                              child: IconButton(
-                                onPressed: () => updateScore(ref, widget.gamePlayedId, player.id, 1),
-                                icon: const Icon(Icons.add_circle_outline),
-                                color: AppColors.primary,
-                                iconSize: 28,
                               ),
                             ),
                           ],
@@ -784,7 +780,7 @@ class _MultiSelectBar extends StatefulWidget {
 }
 
 class _MultiSelectBarState extends State<_MultiSelectBar> {
-  final _controller = TextEditingController(text: '1');
+  final _controller = TextEditingController(text: '0');
 
   @override
   void dispose() {
@@ -812,6 +808,9 @@ class _MultiSelectBarState extends State<_MultiSelectBar> {
     repo.update(widget.gamePlayedId, gp.copyWith(scores: newScores, history: [...gp.history, entry]));
     widget.ref.invalidate(activeGamesProvider);
     bumpGameVersion(widget.ref);
+
+    _checkEndGameForScores(widget.ref, widget.gamePlayedId, gp, newScores);
+
     widget.onApplied();
   }
 
@@ -825,55 +824,50 @@ class _MultiSelectBarState extends State<_MultiSelectBar> {
           color: Theme.of(context).colorScheme.surfaceContainerHigh,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              Text(l10n.playersCount(widget.selectedPlayerIds.length),
-                  style: Theme.of(context).textTheme.labelLarge),
-              const SizedBox(width: AppSpacing.sm),
-              SizedBox(
-                width: 56,
-                child: TextField(
-                  controller: _controller,
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  style: GoogleFonts.bricolageGrotesque(
-                      fontSize: 20, fontWeight: FontWeight.w800),
-                  decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                      isDense: true),
-                ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(l10n.playersCount(widget.selectedPlayerIds.length),
+                style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(width: AppSpacing.md),
+            SizedBox(
+              width: 96,
+              child: TextField(
+                controller: _controller,
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+                style: GoogleFonts.bricolageGrotesque(
+                    fontSize: 20, fontWeight: FontWeight.w800),
+                decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                    isDense: true),
               ),
-              const SizedBox(width: AppSpacing.sm),
-              _QuickButton(label: '-5', onTap: () => _controller.text = '5'),
-              const SizedBox(width: 4),
-              _QuickButton(label: '-1', onTap: () => _controller.text = '1'),
-              const SizedBox(width: 4),
-              _QuickButton(label: '+1', onTap: () => _controller.text = '1'),
-              const SizedBox(width: 4),
-              _QuickButton(label: '+5', onTap: () => _controller.text = '5'),
-              const SizedBox(width: AppSpacing.md),
-              SizedBox(
-                width: 48,
-                child: IconButton(
-                  onPressed: _value > 0 ? () => _applyToAll(-_value) : null,
-                  icon: const Icon(Icons.remove_circle, size: 32),
-                  color: AppColors.errorMuted,
-                  padding: EdgeInsets.zero,
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 48,
+                  child: IconButton(
+                    onPressed: _value > 0 ? () => _applyToAll(-_value) : null,
+                    icon: const Icon(Icons.remove_circle, size: 32),
+                    color: AppColors.errorMuted,
+                    padding: EdgeInsets.zero,
+                  ),
                 ),
-              ),
-              SizedBox(
-                width: 48,
-                child: IconButton(
-                  onPressed: _value > 0 ? () => _applyToAll(_value) : null,
-                  icon: const Icon(Icons.add_circle, size: 32),
-                  color: AppColors.secondary,
-                  padding: EdgeInsets.zero,
+                SizedBox(
+                  width: 48,
+                  child: IconButton(
+                    onPressed: _value > 0 ? () => _applyToAll(_value) : null,
+                    icon: const Icon(Icons.add_circle, size: 32),
+                    color: AppColors.secondary,
+                    padding: EdgeInsets.zero,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ),
     );
